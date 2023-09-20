@@ -23,11 +23,18 @@ Turtle = {
         return Turtle._direction % 4
     end,
 
+    turnRight = function()
+        Turtle._direction = Turtle._direction + 1
+    end,
+
+    turnLeft = function()
+        Turtle._direction = Turtle._direction - 1
+    end,
+
     --------------
     -- Movement --
     --------------
 
-    -- Position
     moveForward = function()
         if Turtle._direction == 0 then
             Turtle._zPos = Turtle._zPos + 1
@@ -54,15 +61,6 @@ Turtle = {
         return Turtle
     end,
 
-    -- Rotation
-    turnRight = function()
-        Turtle._direction = Turtle._direction + 1
-    end,
-
-    turnLeft = function()
-        Turtle._direction = Turtle._direction - 1
-    end,
-
     ---------------
     -- Inventory --
     ---------------
@@ -79,6 +77,8 @@ Turtle = {
             [4] = Turtle._invSlot4
         }
     end
+
+
 }
 
 print(Turtle.getPosition())
