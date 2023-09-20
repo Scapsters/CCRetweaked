@@ -56,11 +56,11 @@ function EmptyStorage()
   turtle.turnLeft()
   turtle.turnLeft()
   MoveForward()
-  
+
   for i= 1, CHESTS_HEIGHT do MoveUp() end
-  
+
   local prev = turtle.getSelectedSlot()
-  
+
   local isSaplingStackSaved = false
   for i= 1, 16 do
     turtle.select(i)
@@ -71,11 +71,11 @@ function EmptyStorage()
       isSaplingStackSaved = true
     end
   end
-  
+
   turtle.select(prev)
-  
+
   for i= 1, CHESTS_HEIGHT do MoveDown() end
-  
+
   turtle.turnLeft()
   turtle.turnLeft()
   MoveForward()
