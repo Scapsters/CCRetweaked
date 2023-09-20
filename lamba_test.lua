@@ -64,23 +64,25 @@ Turtle = {
     ---------------
     -- Inventory --
     ---------------
-    _invSlot1 = nil,
-    _invSlot2 = nil,
-    _invSlot3 = nil,
-    _invSlot4 = nil,
+    _inventory = {
+        [1] = nil,
+        [2] = nil,
+        [3] = nil,
+        [4] = nil,
+        n = 4
+    },
     _selSlot = 1,
 
     getInventory = function()
-        return {
-            [1] = Turtle._invSlot1,
-            [2] = Turtle._invSlot2,
-            [3] = Turtle._invSlot3,
-            [4] = Turtle._invSlot4
-        }
+        return Turtle._inventory
     end,
 
     getSelectedSlot = function()
         return Turtle._selSlot
+    end,
+
+    getSelectedItem = function()
+        return Turtle._inventory[Turtle._selSlot]
     end
 
 }
