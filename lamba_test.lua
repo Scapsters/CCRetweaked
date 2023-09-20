@@ -50,7 +50,7 @@ Turtle = {
     end,
 
     moveUp = function()
-        Turtle._yPos = Turtle._yPos + 1
+    Turtle._yPos = Turtle._yPos + 1
 
         return Turtle
     end,
@@ -68,6 +68,7 @@ Turtle = {
     _invSlot2 = nil,
     _invSlot3 = nil,
     _invSlot4 = nil,
+    _selSlot = 1,
 
     getInventory = function()
         return {
@@ -76,8 +77,11 @@ Turtle = {
             [3] = Turtle._invSlot3,
             [4] = Turtle._invSlot4
         }
-    end
+    end,
 
+    getSelectedSlot = function()
+        return Turtle._selSlot
+    end
 
 }
 
