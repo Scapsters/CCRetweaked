@@ -83,9 +83,38 @@ Turtle = {
 
     getSelectedItem = function()
         return Turtle._inventory[Turtle._selSlot]
+    end,
+
+    setSlot = function(slot, item)
+        -- Make sure slot is within bounds
+        if slot > 4 or slot < 1 then
+            print("Invalid slot: "..slot.." is outside the range [1, 4]. Returning...")
+            return Turtle
+        end
+
+        -- Make sure the item is an item
+        if item == nil then
+            print("Item is nil. Returning...")
+            return
+        elseif item.name == nil then
+            print("Item has no name. Returning...")
+            return
+        end
+
+        Turtle._inventory[slot] = item
+    end,
+
+    putInInventory = function(item)
+        local inventory = Turtle._inventory
+        for i= 1, inventory.n do
+            if inventory[i] == nil then
+                inventory[i] = item
+                return Turtle
+            end
+        end
+
+        print("Couldn't fit "..item.name..". Turtle was full. Returning...")
+        return Turtle
     end
 
 }
-
-print(Turtle.getPosition())
-
