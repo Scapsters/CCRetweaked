@@ -2,98 +2,86 @@ Turtle = {
     --------------
     -- Position --
     --------------
-    _xPos = 0,
-    _yPos = 0,
-    _zPos = 0,
 
-    getPosition = function()
+    getPosition = function(self)
         return {
-            [1] = Turtle._xPos,
-            [2] = Turtle._yPos,
-            [3] = Turtle._zPos
+            [1] = self._xPos,
+            [2] = self._yPos,
+            [3] = self._zPos
         }
     end,
 
     ---------------
     -- Direction --
     ---------------
-    _direction = 0,
 
-    getDirection = function()
-        return Turtle._direction % 4
+    getDirection = function(self)
+        return self._direction % 1
     end,
 
-    turnRight = function()
-        Turtle._direction = Turtle._direction + 1
+    turnRight = function(self)
+        self._direction = self._direction + 1
     end,
 
-    turnLeft = function()
-        Turtle._direction = Turtle._direction - 1
+    turnLeft = function(self)
+        self._direction = self._direction - 1
     end,
 
     --------------
     -- Movement --
     --------------
 
-    moveForward = function()
-        if Turtle._direction == 0 then
-            Turtle._zPos = Turtle._zPos + 1
-        elseif Turtle._direction == 1 then
-            Turtle._xPos = Turtle._xPos + 1
-        elseif Turtle._direction == 1 then
-            Turtle._zPos = Turtle._zPos - 1
-        elseif Turtle._direction == 1 then
-            Turtle._xPos = Turtle._xPos - 1
+    moveForward = function(self)
+        if self._direction == 0 then
+            self._zPos = self._zPos + 1
+        elseif self._direction == 1 then
+            self._xPos = self._xPos + 1
+        elseif self._direction == 2 then
+            self._zPos = self._zPos - 1
+        elseif self._direction == 4 then
+            self._xPos = self._xPos - 1
         end
 
-        return Turtle
+        return self
     end,
 
-    moveUp = function()
-    Turtle._yPos = Turtle._yPos + 1
+    moveUp = function(self)
+    self._yPos = self._yPos + 1
 
-        return Turtle
+        return self
     end,
 
-    moveDown = function()
-        Turtle._yPos = Turtle._yPos - 1
+    moveDown = function(self)
+        self._yPos = self._yPos - 1
 
-        return Turtle
+        return self
     end,
 
-    move = function()
-        Turtle.moveForward()
+    move = function(self)
+        self.moveForward()
     end,
 
     ---------------
     -- Inventory --
     ---------------
-    _inventory = {
-        [1] = nil,
-        [2] = nil,
-        [3] = nil,
-        [4] = nil,
-        n = 4
-    },
-    _selSlot = 1,
 
-    getInventory = function()
-        return Turtle._inventory
+    getInventory = function(self)
+        return self._inventory
     end,
 
-    getSelectedSlot = function()
-        return Turtle._selSlot
+    getSelectedSlot = function(self)
+        return self._selSlot
     end,
 
-    getSelectedItem = function()
-        return Turtle._inventory[Turtle._selSlot]
+    getSelectedItem = function(self)
+        return self._inventory[self._selSlot]
     end,
 
-    setSlot = function(slot, item)
+    setSlot = function(self, slot, item)
         -- Make sure slot is within bounds
         if slot > 4 or slot < 1 then
             print("Invalid slot: "..slot.." is outside the range [1, 4]. Returning...")
-            return Turtle
+            return self
         end
 
         -- Make sure the item is an item
@@ -105,20 +93,48 @@ Turtle = {
             return
         end
 
-        Turtle._inventory[slot] = item
+        self._inventory[slot] = item
     end,
 
-    pickup = function(item)
-        local inventory = Turtle._inventory
+    pickup = function(self, item)
+        local inventory = self._inventory
         for i= 1, inventory.n do
             if inventory[i] == nil then
                 inventory[i] = item
-                return Turtle
+                return self
             end
         end
 
         print("Couldn't fit "..item.name..". Turtle was full. Returning...")
-        return Turtle
+        return self
     end
 
 }
+
+function Turtle:new (o)
+    o = o or {
+        _xPos = 0,
+        _yPos = 0,
+        _zPos = 0,
+
+        _direction = 0,
+
+        _inventory = {
+            [1] = nil,
+            [2] = nil,
+            [3] = nil,
+            [4] = nil,
+            n = 4
+        },
+        _selSlot = 1,
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+local turtle = Turtle:new()
+local turtleTwo = Turtle:new()
+turtleTwo:moveUp()
+print(turtle:getPosition()[2])
+print(turtleTwo:getPosition()[2])
