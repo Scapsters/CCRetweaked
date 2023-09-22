@@ -61,6 +61,10 @@ Turtle = {
         return Turtle
     end,
 
+    move = function()
+        Turtle.moveForward()
+    end,
+
     ---------------
     -- Inventory --
     ---------------
@@ -104,7 +108,7 @@ Turtle = {
         Turtle._inventory[slot] = item
     end,
 
-    putInInventory = function(item)
+    pickup = function(item)
         local inventory = Turtle._inventory
         for i= 1, inventory.n do
             if inventory[i] == nil then
