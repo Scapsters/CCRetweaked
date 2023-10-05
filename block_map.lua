@@ -84,6 +84,15 @@ BlockMap = {
         return prev
     end,
 
+    placeBlock = function(self, x, y, z, block)
+        local formerBlock = self:getBlock(x, y, z)
+        if formerBlock then
+            return false, "Block occupied"
+        end
+
+        self:setBlock(x, y, z, block)
+    end,
+
     ------------------
     -- Blocks/Items --
     ------------------
@@ -95,9 +104,5 @@ BlockMap = {
         if formerBlock.name then
             self:addItem(x, y, z, formerBlock)
         end
-    end,
-
-    -- placeBlock = function(self, x, y, z, block)
-    --     formerBlock = 
-        
+    end
 }
