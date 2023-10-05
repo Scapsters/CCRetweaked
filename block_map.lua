@@ -28,6 +28,9 @@ BlockMap = {
             for y=0, worldSize do
                 for z=0, worldSize do
                     self:moveItemsIfOccupied(x, y, z)
+
+                    local block = self:getBlock(x, y, z)
+                    block.age = block.age + 1
                 end
             end
         end
