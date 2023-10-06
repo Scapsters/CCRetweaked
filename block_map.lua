@@ -1,11 +1,11 @@
-local worldSize = 2
+local worldSize = 4
 
 BlockMap = {
 
     tick = function(self)
-        for x=0, worldSize do
-            for y=0, worldSize do
-                for z=0, worldSize do
+        for x=1, worldSize do
+            for y=1, worldSize do
+                for z=1, worldSize do
                     self:moveItemsIfOccupied(x, y, z)
                 end
             end
@@ -93,15 +93,16 @@ function BlockMap:new(o)
     local items = {}
     local blocks = {}
 
-    for x=0, worldSize do
+    for x=1, worldSize do
+        print("new x")
         items[x] = {}
         blocks[x] = {}
 
-        for y=0, worldSize do
+        for y=1, worldSize do
             items[x][y] = {}
             blocks[x][y] = {}
 
-            for z=0, worldSize do
+            for z=1, worldSize do
                 items[x][y][z] = {n = 0}
                 blocks[x][y][z] = {name = ""}
             end
@@ -134,10 +135,12 @@ local function dump(o)
  end
 
 local function printWorld(world)
-    for _, xPlane in pairs(world) do
-        for _, yRow in pairs(xPlane) do
-            for _, zBlock in pairs(yRow) do
-                io.write(zBlock.name..',')
+    for x=1, worldSize do
+        for y=1, worldSize do
+            for z=1, worldSize do
+                local block = string.sub(world[x][y][z].name, 0, 1)
+                if block == '' then block = ' ' end
+                io.write('['..block..']')
             end
             io.write(' ')
         end
@@ -161,8 +164,14 @@ print(dump(blockMap:getBlock(1, 1, 1)))
 
 print("\n\n")
 print("print world testing")
-blockMap:setBlock(0, 0, 0, {name = "0"})
-blockMap:setBlock(0, 1, 0, {name = "1"})
-blockMap:setBlock(0, 2, 0, {name = "2"})
+for x=1, worldSize do
+    blockMap:setBlock(x, 3, 1, {name = "x"})
+end
+for y=1, worldSize do
+    blockMap:setBlock(1, y, 1, {name = "y"})
+end
+for z=1, worldSize do
+    blockMap:setBlock(3, 2, z, {name = "z"})
+end
 print("\nall blocks: ")
 printWorld(blockMap._blocks)
