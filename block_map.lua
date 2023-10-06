@@ -1,4 +1,4 @@
-local worldSize = 100
+local worldSize = 2
 
 BlockMap = {
 
@@ -28,8 +28,7 @@ BlockMap = {
 
     addItem = function(self, x, y, z, item)
         local items = self._items[x][y][z]
-        items[items.n + 1] = item
-        items.n = items.n + 1
+        items[#items + 1] = item
     end,
 
     pickUpItems = function(self, x, y, z)
@@ -68,7 +67,7 @@ BlockMap = {
     ------------------
 
     breakBlock = function(self, x, y, z)
-        local formerBlock = self:setBlock(x, y, z, {name = nil})
+        local formerBlock = self:setBlock(x, y, z, {name = ""})
 
         -- Don't drop an empty block
         if formerBlock.name then
@@ -104,7 +103,7 @@ function BlockMap:new(o)
 
             for z=0, worldSize do
                 items[x][y][z] = {n = 0}
-                blocks[x][y][z] = {name = nil}
+                blocks[x][y][z] = {name = ""}
             end
         end
     end
@@ -134,9 +133,36 @@ local function dump(o)
     end
  end
 
+local function printWorld(world)
+    for _, xPlane in pairs(world) do
+        for _, yRow in pairs(xPlane) do
+            for _, zBlock in pairs(yRow) do
+                io.write(zBlock.name..',')
+            end
+            io.write(' ')
+        end
+        print()
+    end
+    print()
+end
+
 
 local blockMap = BlockMap:new()
+
+print("basic block testing")
+print("place grass. result should be the former block, air (empty string)")
 print(dump(blockMap:setBlock(1, 1, 1, {name = "grass"})))
+print("\nget the block. should be grass")
 print(dump(blockMap:getBlock(1, 1, 1)))
+print("\nbreak the block. result should be the formal block, grass")
 print(dump(blockMap:breakBlock(1, 1, 1)))
+print("\nget the block, should be air")
 print(dump(blockMap:getBlock(1, 1, 1)))
+
+print("\n\n")
+print("print world testing")
+blockMap:setBlock(0, 0, 0, {name = "0"})
+blockMap:setBlock(0, 1, 0, {name = "1"})
+blockMap:setBlock(0, 2, 0, {name = "2"})
+print("\nall blocks: ")
+printWorld(blockMap._blocks)
