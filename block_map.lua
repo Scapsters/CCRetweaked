@@ -1,26 +1,5 @@
 local worldSize = 100
 
-function BlockMap:new(o)
-    local items = {}
-    local blocks = {}
-
-    for x=0, worldSize do
-        for y=0, worldSize do
-            for z=0, worldSize do
-                items[x][y][z] = {n = 0}
-                blocks[x][y][z] = {name = nil}
-            end
-        end
-    end
-
-
-    o = o or {
-        _items = items,
-        _blocks = blocks,
-        _tick = 0
-    }
-end
-
 BlockMap = {
 
     tick = function(self)
@@ -80,7 +59,7 @@ BlockMap = {
 
     setBlock = function(self, x, y, z, block)
         local prev = self._blocks[x][y][z]
-        self._items[x][y][z] = block
+        self._blocks[x][y][z] = block
         return prev
     end,
 
@@ -95,9 +74,69 @@ BlockMap = {
         if formerBlock.name then
             self:addItem(x, y, z, formerBlock)
         end
+
+        return formerBlock
     end,
 
-    -- placeBlock = function(self, x, y, z, block)
-    --     formerBlock = 
-        
+    placeBlock = function(self, x, y, z, block)
+        local formerBlock =  self:getBlock(x, y, z)
+        if formerBlock.name then -- Air has no name
+            return false, "Block already present"
+        end
+
+        self:setBlock(x, y, z, block)
+        return block
+    end
+
 }
+
+function BlockMap:new(o)
+    local items = {}
+    local blocks = {}
+
+    for x=0, worldSize do
+        items[x] = {}
+        blocks[x] = {}
+
+        for y=0, worldSize do
+            items[x][y] = {}
+            blocks[x][y] = {}
+
+            for z=0, worldSize do
+                items[x][y][z] = {n = 0}
+                blocks[x][y][z] = {name = nil}
+            end
+        end
+    end
+
+
+    o = o or {
+        _items = items,
+        _blocks = blocks,
+        _tick = 0
+    }
+
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+local function dump(o)
+    if type(o) == 'table' then
+       local s = '{ '
+       for k,v in pairs(o) do
+          if type(k) ~= 'number' then k = '"'..k..'"' end
+          s = s .. '['..k..'] = ' .. dump(v) .. ','
+       end
+       return s .. '} '
+    else
+       return tostring(o)
+    end
+ end
+
+
+local blockMap = BlockMap:new()
+print(dump(blockMap:setBlock(1, 1, 1, {name = "grass"})))
+print(dump(blockMap:getBlock(1, 1, 1)))
+print(dump(blockMap:breakBlock(1, 1, 1)))
+print(dump(blockMap:getBlock(1, 1, 1)))
