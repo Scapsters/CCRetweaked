@@ -1,4 +1,4 @@
-local worldSize = 4
+local worldSize = 8
 
 BlockMap = {
 
@@ -149,6 +149,32 @@ local function printWorld(world)
     print()
 end
 
+local function constructSimpleWorld(world)
+    -- Bottom to quarter up
+    for x=1, worldSize do
+        for y=1, worldSize // 4 do
+            for z=1, worldSize do
+                world:setBlock(x, y, z, {name = "s"})
+            end
+        end
+    end
+    -- Quarter up to halfway
+    for x=1, worldSize do
+        for y=worldSize // 4 + 1, worldSize // 4 * 2 do
+            for z=1, worldSize do
+                world:setBlock(x, y, z, {name = "dirt"})
+            end
+        end
+    end
+    -- Halfway exactly
+    for x=1, worldSize do
+        for y=worldSize // 4 * 2, worldSize // 4 * 2 do
+            for z=1, worldSize do
+                world:setBlock(x, y, z, {name = "grass"})
+            end
+        end
+    end
+end
 
 local blockMap = BlockMap:new()
 
@@ -174,4 +200,8 @@ for z=1, worldSize do
     blockMap:setBlock(3, 2, z, {name = "z"})
 end
 print("\nall blocks: ")
+printWorld(blockMap._blocks)
+
+blockMap = BlockMap:new()
+constructSimpleWorld(blockMap)
 printWorld(blockMap._blocks)
