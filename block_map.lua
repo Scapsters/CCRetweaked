@@ -94,6 +94,7 @@ BlockMap = {
         end
 
         self:setBlock(x, y, z, block)
+        return block
     end,
 
     ------------------
