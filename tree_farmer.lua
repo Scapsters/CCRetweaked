@@ -337,4 +337,20 @@ function GetLength(list)
   return index - 1
 end
 
-Main()
+print(GetFirst(
+  NAME_LOGS,
+  {
+    [1] = {
+      name = "minecraft:birch_log",
+      location = 10
+    },
+    [2] = {
+      name = "minecraft:oak_log",
+      location = 13
+    },
+    [3] = {
+      name = "minecraft:birch_log",
+      location = 15
+    }
+  }
+))
