@@ -14,8 +14,6 @@ function Turtle:new (o)
             n = 4
         },
         _selSlot = 1,
-
-        _world = World:new()
     }
     setmetatable(o, self)
     self.__index = self
