@@ -7,6 +7,8 @@ Block = {
     getId = function(self) return self._id end,
     getAge = function(self) return self._age end,
 
+    resetAge = function(self) self._setAge(0) end,
+
     _setAge = function(self, age) self._age = age end,
 
     _tick = function(self)
