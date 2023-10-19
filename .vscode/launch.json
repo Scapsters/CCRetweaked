@@ -8,7 +8,7 @@
             "type": "lua",
             "request": "launch",
             "name": "Debug",
-            "program": "${workspaceFolder}/tree_farmer.lua"
+            "program": "${workspaceFolder}/block_map.lua"
         }
     ]
 }
