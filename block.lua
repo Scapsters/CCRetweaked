@@ -4,6 +4,16 @@
 -- most basic properties possible.
 
 Block = {
+    new = function(self, id)
+        local block = {
+            _id = id or nil,
+            _age = 0
+        }
+        setmetatable(block, self)
+        self.__index = self
+        return block
+    end,
+
     getId = function(self) return self._id end,
     getAge = function(self) return self._age end,
 
@@ -12,16 +22,6 @@ Block = {
     _setAge = function(self, age) self._age = age end,
 
     _tick = function(self)
-        self._setAge(self.getAge() + 1)
+        self:_setAge(self:getAge() + 1)
     end
 }
-
-function Block:new(o, id)
-    o = o or {
-        _id = id or nil,
-        _age = 0
-    }
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end

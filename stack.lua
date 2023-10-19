@@ -3,9 +3,24 @@ require("block")
 -- Things contained in inventories and (almost) the things plopped in worlds
 
 Stack = {
+    new = function(self, block, number)
+        local stack = block
+
+        setmetatable(stack, {__index = self}) -- the object looks to Stack
+        setmetatable(self, {__index = Block}) -- Stack looks to Block (inheritance)
+        -- Note: These can be optimzed by removing the table creation and doing
+        -- self.__index = self
+        -- the second command, setting Stack to look to Block, can likely
+        -- be moved outside of the class to avoid overhead upon Stack creation.
+
+        -- Set Stack attributes
+        stack._number = number or 0
+        return stack
+    end,
+
     getNumber = function(self) return self._number end,
     getBlock = function(self)
-        return Block:new(nil, self:getId())
+        return Block:new(self:getId())
     end,
 
     _setNumber = function(self, number) self._number = number end,
@@ -25,17 +40,3 @@ Stack = {
 
     isEmpty = function(self) return self:getNumber() == 0 end
 }
-
-function Stack:new(o, block, number)
-    block:resetAge()
-    Stack._number = number or 0
-    return block:new(Stack)
-end
-
-local block = Block:new(nil, "pizza")
-local stack = Stack:new(nil, block, 10)
-print(stack:getId())
-print(stack:getNumber())
-
-local stack2 = Stack:new(nil, block)
-print(stack2:getNumber())
