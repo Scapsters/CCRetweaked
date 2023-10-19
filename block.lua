@@ -14,9 +14,9 @@ Block = {
     end
 }
 
-function Block:new(o)
+function Block:new(o, id)
     o = o or {
-        _id = nil,
+        _id = id or nil,
         _age = 0
     }
     setmetatable(o, self)
