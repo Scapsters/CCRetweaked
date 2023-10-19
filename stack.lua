@@ -2,6 +2,8 @@ require("block")
 
 -- Things contained in inventories and (almost) the things plopped in worlds
 
+MAX_NUMBER = 64
+
 Stack = {
     new = function(self, block, number)
         local stack = block
@@ -25,8 +27,21 @@ Stack = {
 
     _setNumber = function(self, number) self._number = number end,
 
+    addItem = function(self, amount)
+        -- returns how many items are left over
+        local number = self:getNumber()
+        if number + amount > MAX_NUMBER then
+            -- If there isnt enough room
+            self:_setNumber(MAX_NUMBER)
+            return (number + amount) - MAX_NUMBER
+        else
+            self:_setNumber(number + amount)
+            return 0
+        end
+    end,
+
     takeItem = function(self, amount)
-        -- Returns how many of that item was taken
+        -- returns how many items leave the stack
         local number = self:getNumber()
         if amount > number then
             -- If too many items are taken

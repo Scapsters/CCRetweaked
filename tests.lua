@@ -37,4 +37,16 @@ for i=1, 10 do worldStack2:_tick() end
 assert(worldStack:getAge() == 0, "16")
 assert(worldStack2:getAge() == 10, "17")
 
+local block = Block:new("pringles")
+local stack = Stack:new(block, 50)
+
+assert(stack:addItem(20) == 6, "18") -- (50 + 20) - 64 = 6
+assert(stack:getNumber() == 64, "19")
+
+assert(stack:takeItem(64) == 64, "20")
+assert(stack:getNumber() == 0, "21")
+
+assert(stack:addItem(20) == 0, "22")
+assert(stack:getNumber() == 20, "23")
+
 print("all tests passed")
