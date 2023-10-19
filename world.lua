@@ -1,3 +1,15 @@
+World = {
+    tick = function(self)
+        self._blockMap.tick()
+        self._turtle.tick()
+    end,
+
+    constructSimpleWorld = function(self)
+        self._blockMap:constructSimpleWorld()
+        self._turtle:_setPosition(2, 5, 2)
+    end
+}
+
 function World:new (o)
     o = o or {
         _blockMap = BlockMap:new(),
@@ -8,10 +20,3 @@ function World:new (o)
     self.__index = self
     return o
 end
-
-World = {
-    tick = function(self)
-        self._blockMap.tick()
-        self._turtle.tick()
-    end
-}

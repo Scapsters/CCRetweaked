@@ -33,6 +33,12 @@ Turtle = {
         }
     end,
 
+    _setPosition = function(self, x, y, z)
+        self._xPos = x
+        self._yPos = y
+        self._zPos = z
+    end,
+
     ---------------
     -- Direction --
     ---------------
