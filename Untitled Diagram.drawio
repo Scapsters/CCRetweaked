@@ -90,7 +90,7 @@
                         <mxRectangle x="480" y="550" width="70" height="30" as="alternateBounds"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="7ayOkPlbHj_rz-AtTsTn-55" value="&lt;div&gt;- items: Item[]&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="7ayOkPlbHj_rz-AtTsTn-54" vertex="1">
+                <mxCell id="7ayOkPlbHj_rz-AtTsTn-55" value="&lt;div&gt;- block: Block&lt;/div&gt;&lt;div&gt;- number: int&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="7ayOkPlbHj_rz-AtTsTn-54" vertex="1">
                     <mxGeometry y="26" width="210" height="34" as="geometry"/>
                 </mxCell>
                 <mxCell id="7ayOkPlbHj_rz-AtTsTn-56" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="7ayOkPlbHj_rz-AtTsTn-54" vertex="1">
