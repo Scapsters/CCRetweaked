@@ -3,7 +3,7 @@
 -- Basically useless on its own, holds the management of the
 -- most basic properties possible.
 
-Atom = {
+Block = {
     getId = function(self) return self._id end,
     getAge = function(self) return self._age end,
 
@@ -14,7 +14,7 @@ Atom = {
     end
 }
 
-function Atom:new(o)
+function Block:new(o)
     o = o or {
         _id = nil,
         _age = 0
