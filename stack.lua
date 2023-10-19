@@ -4,6 +4,9 @@ require("block")
 
 Stack = {
     getNumber = function(self) return self._number end,
+    getBlock = function(self)
+        return Block:new(nil, self:getId())
+    end,
 
     _setNumber = function(self, number) self._number = number end,
 
