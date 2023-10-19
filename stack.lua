@@ -23,13 +23,16 @@ Stack = {
     isEmpty = function(self) return self:getNumber() == 0 end
 }
 
-function Stack:new(o, id)
-    local so = Block:new(nil, id)
-    o = so:new(o or {
-        _number = 0
-    })
-    return o
+function Stack:new(o, block, number)
+    block:resetAge()
+    Stack._number = number or 0
+    return block:new(Stack)
 end
 
-local stack = Stack:new(nil, "pizza")
+local block = Block:new(nil, "pizza")
+local stack = Stack:new(nil, block, 10)
 print(stack:getId())
+print(stack:getNumber())
+
+local stack2 = Stack:new(nil, block)
+print(stack2:getNumber())
