@@ -9,28 +9,32 @@ local worldStack = WorldStack:new(stack, 300)
 local worldStack2 = WorldStack:new(Stack:new(Block:new("DIRT :smirk:"), 32), 100)
 
 -- Test WorldStack methods
-print("\n"..worldStack:getMaxAge()) -- 300
-print(worldStack:shouldDespawn()) -- false
+assert(worldStack:getMaxAge() == 300, "1")
+assert(worldStack:shouldDespawn() == false, "2")
 
 -- Test Stack methods
-print("\n"..worldStack:getNumber()) -- 64
-print(worldStack:getBlock():getId()) -- "grASS"
-print(worldStack:isEmpty()) -- false
-print(worldStack:takeItem(10)) -- 10
-print(worldStack:getNumber()) -- 54 (64 - 10)
+assert(worldStack:getNumber() == 64, "3")
+assert(worldStack:getBlock():getId() == "grASS", "4")
+assert(worldStack:isEmpty() == false, "5")
+assert(worldStack:takeItem(10) == 10, "6")
+assert(worldStack:getNumber() == 54, "7")
+assert(worldStack:takeItem(60) == 54, "8")
+assert(worldStack:getNumber() == 0, "9")
 
 -- Test Block methods
-print("\n"..worldStack:getId()) -- "grASS"
-print(worldStack:getAge()) -- 0
-for i=1, 10 do worldStack:_tick() end -- nothing
-print(worldStack:getAge()) -- 10 (0 + 10)
+assert(worldStack:getId() == "grASS", "10")
+assert(worldStack:getAge() == 0, "11")
+for i=1, 10 do worldStack:_tick() end
+assert(worldStack:getAge() == 10, "12") --(0 + 10)
 worldStack:resetAge()
-print(worldStack:getAge()) -- 0 (it was just reset)
+assert(worldStack:getAge() == 0, "13") -- 0 (it was just reset)
 
 -- See if objects mess with eachother in ways they arent supposed to
-print("\n"..worldStack:getNumber()) -- 54
-print(worldStack2:getNumber()) -- 32
+assert(worldStack:getNumber() == 0, "14")
+assert(worldStack2:getNumber() == 32, "15")
 
 for i=1, 10 do worldStack2:_tick() end
-print("\n"..worldStack:getAge()) -- 0
-print(worldStack2:getAge()) -- 10
+assert(worldStack:getAge() == 0, "16")
+assert(worldStack2:getAge() == 10, "17")
+
+print("all tests passed")
