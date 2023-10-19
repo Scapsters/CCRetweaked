@@ -1,5 +1,6 @@
 require("stack")
 
+-- Represents a stack of items floating in the world, that will eventually despawn
 
 WorldStack = {
     new = function(self, stack, maxAge)
