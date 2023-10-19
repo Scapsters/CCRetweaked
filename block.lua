@@ -19,7 +19,7 @@ function Block:new(o)
         _id = nil,
         _age = 0
     }
-    o.setmetatable(o, self)
+    setmetatable(o, self)
     self.__index = self
     return o
 end
