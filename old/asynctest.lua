@@ -90,3 +90,4 @@ while coroutine.status(turtleRoutine) ~= "dead" do
         repeat until os.time() == nextTime
         print(x)
 end
+--penis munchers
