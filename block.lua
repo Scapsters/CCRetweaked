@@ -4,20 +4,20 @@
 -- most basic properties possible.
 
 Atom = {
-    getId = function(self) return self.id end,
-    getAge = function(self) return self.age end,
+    getId = function(self) return self._id end,
+    getAge = function(self) return self._age end,
 
-    _setAge = function(self, age) self.age = age end,
+    _setAge = function(self, age) self._age = age end,
 
-    tick = function(self)
+    _tick = function(self)
         self._setAge(self.getAge() + 1)
     end
 }
 
 function Atom:new(o)
     o = o or {
-        id = nil,
-        age = 0
+        _id = nil,
+        _age = 0
     }
     o.setmetatable(o, self)
     self.__index = self
