@@ -11,8 +11,9 @@ local Tester = {
     end,
 
     runTests = function(self)
-        for _,test in pairs(self._tests) do
-            if _ == "n" then return end -- Dont call `run` on the integer...
+        for i,test in pairs(self._tests) do
+            if i == "n" then return end -- Dont call `run` on the integer...
+            io.write(i..": ")
             test:run()
         end
     end
