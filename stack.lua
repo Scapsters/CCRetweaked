@@ -5,8 +5,8 @@ require("block")
 MAX_NUMBER = 64
 
 Stack = {
-    new = function(self, block, number)
-        local stack = Block:new(block:getId()) -- Make a new block or else bad things happen
+    new = function(self, block, number, oldStack)
+        local stack = Block:new(nil, block or oldStack:getBlock()) -- Make a new block or else bad things happen
 
         setmetatable(stack, {__index = self}) -- the object looks to Stack
         setmetatable(self, {__index = Block}) -- Stack looks to Block (inheritance)
@@ -16,7 +16,7 @@ Stack = {
         -- be moved outside of the class to avoid overhead upon Stack creation.
 
         -- Set Stack attributes
-        stack._number = number or 0
+        stack._number = number or oldStack:getNumber() or 0
         return stack
     end,
 

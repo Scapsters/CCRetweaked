@@ -4,10 +4,10 @@
 -- most basic properties possible.
 
 Block = {
-    new = function(self, id)
+    new = function(self, id, oldBlock)
         local block = {
-            _id = id or nil,
-            _age = 0
+            _id = id or oldBlock:getId() or nil,
+            _age = 0 -- Always reset this, when an item is dropped, or enters an inventory, its age should be reset
         }
         setmetatable(block, self)
         self.__index = self
