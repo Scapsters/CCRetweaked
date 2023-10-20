@@ -1,4 +1,5 @@
 require("world_stack")
+require("inventory")
 
 -- This creates a 64 stack of grass floating in the world
 local block = Block:new("grASS")
@@ -40,6 +41,7 @@ assert(worldStack2:getAge() == 10, "17")
 local block = Block:new("pringles")
 local stack = Stack:new(block, 50)
 
+-- Stack testing
 assert(stack:addItem(20) == 6, "18") -- (50 + 20) - 64 = 6
 assert(stack:getNumber() == 64, "19")
 
@@ -48,5 +50,39 @@ assert(stack:getNumber() == 0, "21")
 
 assert(stack:addItem(20) == 0, "22")
 assert(stack:getNumber() == 20, "23")
+
+-- Inventory testing
+local inventory = Inventory:new()
+
+local block = Block:new("cum block")
+local stack = Stack:new(block, 64)
+print(stack:getNumber())
+
+local block = Block:new("bbbb")
+local partialStack = Stack:new(block, 48)
+print(stack:getNumber())
+print(partialStack:getNumber())
+
+-- Just dump a stack
+assert(inventory:pickUp(stack) == 0, "24")
+assert(inventory:_getSelectedStack() ~= nil, "25")
+assert(inventory:_getSelectedStack():getId() == "cum block", "26")
+
+-- Dump 3/4 of a stack twice, check the two slots
+assert(inventory:pickUp(partialStack) == 0, "27")
+assert(inventory:pickUp(partialStack) == 0, "28")
+inventory:select(2)
+print(inventory:_getSelectedStack():getNumber())
+assert(inventory:_getSelectedStack():getNumber() == 64, "29")
+inventory:select(3)
+print(inventory:_getSelectedStack():getNumber())
+
+-- Weird bug where if you create a block, then create 2 stacks from that block,
+-- both stacks turn into the same stack?? this tests that
+
+local block = Block:new("Goodnight, gamer")
+local stack = Stack:new(block, 64)
+local differentStack = Stack:new(block, 10)
+assert(stack:getNumber() == 64, "30")
 
 print("all tests passed")
