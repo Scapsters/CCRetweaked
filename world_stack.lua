@@ -4,7 +4,7 @@ require("stack")
 
 WorldStack = {
     new = function(self, stack, maxAge)
-        local worldStack = stack
+        local worldStack = Stack:new(stack:getBlock(), stack:getNumber()) -- Make a new stack or else bad things happen
 
         setmetatable(worldStack, {__index = self}) -- the object looks to WorldStack
         setmetatable(self, {__index = Stack}) -- WorldStack looks to Stack (inheritance)

@@ -6,7 +6,7 @@ MAX_NUMBER = 64
 
 Stack = {
     new = function(self, block, number)
-        local stack = block
+        local stack = Block:new(block:getId()) -- Make a new block or else bad things happen
 
         setmetatable(stack, {__index = self}) -- the object looks to Stack
         setmetatable(self, {__index = Block}) -- Stack looks to Block (inheritance)
