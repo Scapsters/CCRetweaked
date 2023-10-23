@@ -1,7 +1,5 @@
 require("constants")
 
--- The atom, the smallest building block of the world.
---
 -- Basically useless on its own, holds the management of the
 -- most basic properties possible.
 
