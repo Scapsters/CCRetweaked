@@ -85,4 +85,14 @@ local stack = Stack:new(block, 64)
 local differentStack = Stack:new(block, 10)
 assert(stack:getNumber() == 64, "30")
 
-print("all tests passed")
+print("all shit tests passed")
+
+print(block)
+print(stack)
+print(worldStack)
+
+DEBUG = false
+
+print(block)
+print(stack)
+print(worldStack)

@@ -8,8 +8,14 @@ Stack = {
     new = function(self, block, number, oldStack)
         local stack = Block:new(nil, block or oldStack:getBlock()) -- Make a new block or else bad things happen
 
-        setmetatable(stack, {__index = self}) -- the object looks to Stack
-        setmetatable(self, {__index = Block}) -- Stack looks to Block (inheritance)
+        setmetatable(stack, {
+            __index = self,
+            __tostring = self.__tostring
+        }) -- the object looks to Stack
+        setmetatable(self, {
+            __index = Block,
+            __tostring = self.__tostring
+        }) -- Stack looks to Block (inheritance)
         -- Note: These can be optimzed by removing the table creation and doing
         -- self.__index = self
         -- the second command, setting Stack to look to Block, can likely
@@ -53,5 +59,13 @@ Stack = {
         end
     end,
 
-    isEmpty = function(self) return self:getNumber() == 0 end
+    isEmpty = function(self) return self:getNumber() == 0 end,
+
+    __tostring = function(self)
+        if DEBUG then
+            return "|Stack [_number]: "..self:getNumber().." |Block [_id]: "..self:getId().." [_age]: "..self:getAge().."||"
+        else
+            return self:getNumber().." ["..self:getId().."]"
+        end
+    end
 }

@@ -6,8 +6,14 @@ WorldStack = {
     new = function(self, stack, maxAge, oldWorldStack)
         local worldStack = Stack:new(nil, nil, stack or oldWorldStack:getStack()) -- Make a new stack or else bad things happen
 
-        setmetatable(worldStack, {__index = self}) -- the object looks to WorldStack
-        setmetatable(self, {__index = Stack}) -- WorldStack looks to Stack (inheritance)
+        setmetatable(worldStack, {
+            __index = self,
+            __tostring = self.__tostring
+        }) -- the object looks to WorldStack
+        setmetatable(self, {
+            __index = Stack,
+            __tostring = Stack.__tostring
+        }) -- WorldStack looks to Stack (inheritance)
         -- Note: /stack.lua explains how these can be optimized
 
         -- set WorldStack properties
@@ -23,5 +29,13 @@ WorldStack = {
 
     shouldDespawn = function(self)
         return self:getAge() > self._maxAge
+    end,
+
+    __tostring = function(self)
+        if DEBUG then
+            return "|WorldStack [_maxAge]: "..self:getMaxAge().." |Stack [_number]: "..self:getNumber().." |Block [_id]: "..self:getId().." [_age]: "..self:getAge().."|||"
+        else
+            return self:getNumber().." ["..self:getId().."] ("..self:getAge().."t / "..self:getMaxAge().."t)"
+        end
     end
 }

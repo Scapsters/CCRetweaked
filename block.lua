@@ -1,3 +1,5 @@
+require("constants")
+
 -- The atom, the smallest building block of the world.
 --
 -- Basically useless on its own, holds the management of the
@@ -9,8 +11,10 @@ Block = {
             _id = id or oldBlock:getId() or nil,
             _age = 0 -- Always reset this, when an item is dropped, or enters an inventory, its age should be reset
         }
-        setmetatable(block, self)
-        self.__index = self
+        setmetatable(block, {
+            __index = self,
+            __tostring = self.__tostring
+        })
         return block
     end,
 
@@ -23,5 +27,13 @@ Block = {
 
     _tick = function(self)
         self:_setAge(self:getAge() + 1)
+    end,
+
+    __tostring = function(self)
+        if DEBUG then
+            return "|Block [_id]: "..self:getId().." [_age]: "..self:getAge().."|"
+        else
+            return "["..self:getId().."]"
+        end
     end
 }
