@@ -1,3 +1,4 @@
+---@diagnostic disable: redefined-local
 require("world_stack")
 
 local Tester = {
@@ -17,19 +18,15 @@ local Tester = {
             if i == "n" then return end -- Dont call `run` on the integer...
             io.write(i..": ")
             test:run()
-            io.write("\n")
         end
     end
 }
 
 Test = {
-    new = function(self, testName, testFunction, expectedValue, falseOutput)
-        if falseOutput == nil then falseOutput = "Failed" end
+    new = function(self, testName, testFunction)
         local test = {
             _testName = testName,
-            _testFunction = testFunction,
-            _expectedValue = expectedValue,
-            _falseOutput = falseOutput
+            _testFunction = testFunction
         }
         setmetatable(test, {__index = self})
         return test
@@ -37,49 +34,70 @@ Test = {
 
     run = function(self)
         io.write("["..self._testName.."] ")
+
         local result = self._testFunction()
-        if result ~= self._expectedValue then
-            io.write(
-                self._falseOutput.."\t\t"..
-                "Expected result: ".. self._expectedValue.."\t\t"..
-                "Actual result: ".. result
-            )
-        else
-            io.write("Passed")
+
+        if result then print(result)
+        else print("All tests passed")
         end
     end
 }
 
-local blockOne = Test:new(
-    "`getId` on `Block` object",
-    function()
-        local id = "4 big guys"
+Error = {
+    new = function(self, expected, actual, description)
+        local error = {
+            _expected = expected,
+            _actual = actual,
+            _description = description
+        }
+        setmetatable(error, {
+            __index = self,
+            __tostring = self.__tostring
+        })
+        return error
+    end,
 
+    __tostring = function(self)
+        return self._description.."| Expected: "..self._expected.." Actual: "..self._actual
+    end
+}
+
+
+local blockTests = Test:new(
+    "blockTests",
+    function()
+        local id = "stella arcanum"
         local block = Block:new(id)
 
-        local experimental = block:getId()
+        local expected = id
+        local actual = block:getId()
+        if actual ~= expected then
+            return Error:new(expected, actual, "Id set wrong on creation")
+        end
 
-        return experimental
-    end, "4 big guys")
+        local expected = 0
+        local actual = block:getAge()
+        if actual ~= expected then
+            return Error:new(expected, actual, "Age set wrong on creation")
+        end
 
-local blockTwo = Test:new(
-    "`getAge` on `Block` object",
-    function()
-        local block = Block:new()
+        for i=1, 16 do block:_tick() end
 
-        local experimental = block:getAge()
+        local expected = 16
+        local actual = block:getAge()
+        if actual ~= expected then
+            return Error:new(expected, actual, "tick() didnt work")
+        end
 
-        return experimental
-    end, 0)
+        block:resetAge()
+        local expected = 0
+        local actual = block:getAge()
+        if actual ~= expected then
+            return Error:new(expected, actual, "resetAge didnt work")
+        end
 
+        return nil -- if it returns nothing, then nothing broke
+    end)
 
-local test2 = Test:new(
-    "Whats 9 + 10",
-    function()
-        return 9 + 10
-    end, 21, "this fuckin test failed wat da hell"
-)
-
-Tester:addTest(blockOne)
-Tester:addTest(blockTwo)
+Tester:addTest(blockTests)
 Tester:runTests()
