@@ -23,7 +23,7 @@ local Tester = {
     end
 }
 
-Test = {
+TestBundle = {
     new = function(self, testName, testFunction)
         local test = {
             _testName = testName,
@@ -64,7 +64,7 @@ Error = {
 }
 
 
-local blockTests = Test:new(
+local blockTests = TestBundle:new(
     "blockTests",
     function()
         local id = "stella arcanum"
@@ -99,7 +99,7 @@ local blockTests = Test:new(
     end
 )
 
-local stackInheritanceTests = Test:new(
+local stackInheritanceTests = TestBundle:new(
     "stackInheritanceTests",
     function()
         local id = "stella arcanum"
@@ -135,7 +135,7 @@ local stackInheritanceTests = Test:new(
     end
 )
 
-local stackInheritanceTestsDefault = Test:new(
+local stackInheritanceTestsDefault = TestBundle:new(
     "stackInheritanceTestsDefault",
     function()
         local stack = Stack:new()
@@ -169,7 +169,7 @@ local stackInheritanceTestsDefault = Test:new(
     end
 )
 
-local stackTests = Test:new(
+local stackTests = TestBundle:new(
     "stackTests",
     function()
         local id = "stella arcanum"
@@ -256,7 +256,7 @@ local stackTests = Test:new(
     end
 )
 
-local worldStackTests = Test:new(
+local worldStackTests = TestBundle:new(
     "worldStackTests",
     function()
         local id = "stella arcanum"
@@ -306,7 +306,7 @@ local worldStackTests = Test:new(
     end
 )
 
-local worldStackInheritanceTests = Test:new(
+local worldStackInheritanceTests = TestBundle:new(
     "worldStackInheritanceTests",
     function()
         local id = "stella arcanum"
@@ -421,7 +421,7 @@ local worldStackInheritanceTests = Test:new(
     end
 )
 
-local inventoryTests = Test:new(
+local inventoryTests = TestBundle:new(
     "inventoryTests",
     function()
         local inventory = Inventory:new()
