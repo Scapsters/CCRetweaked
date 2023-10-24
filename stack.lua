@@ -66,6 +66,10 @@ Stack = {
 
     isEmpty = function(self) return self:getNumber() == 0 end,
 
+    toString = function(self)
+        return self:__tostring()
+    end,
+
     __tostring = function(self)
         if DEBUG then
             return "|Stack [_number]: "..self:getNumber().." |Block [_id]: "..self:getId().." [_age]: "..self:getAge().."||"

@@ -36,6 +36,10 @@ WorldStack = {
         return self:getAge() > self._maxAge
     end,
 
+    toString = function(self)
+        return self:__tostring()
+    end,
+
     __tostring = function(self)
         if DEBUG then
             return "|WorldStack [_maxAge]: "..self:getMaxAge().." |Stack [_number]: "..self:getNumber().." |Block [_id]: "..self:getId().." [_age]: "..self:getAge().."|||"

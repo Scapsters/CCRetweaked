@@ -15,7 +15,8 @@ Block = {
         }
         setmetatable(block, {
             __index = self,
-            __tostring = self.__tostring
+            __tostring = self.__tostring,
+            __concat = self.__tostring
         })
         return block
     end,
@@ -29,6 +30,10 @@ Block = {
 
     _tick = function(self)
         self:_setAge(self:getAge() + 1)
+    end,
+
+    toString = function(self)
+        return self:__tostring()
     end,
 
     __tostring = function(self)
