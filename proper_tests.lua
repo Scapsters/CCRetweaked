@@ -95,8 +95,6 @@ local blockTests = Test:new(
         if actual ~= expected then
             return Error:new(expected, actual, "resetAge didnt work")
         end
-
-        return nil -- if it returns nothing, then nothing broke
     end)
 
 Tester:addTest(blockTests)
