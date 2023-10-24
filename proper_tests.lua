@@ -24,6 +24,7 @@ local Tester = {
 
 Test = {
     new = function(self, testName, testFunction, expectedValue, falseOutput)
+        if falseOutput == nil then falseOutput = "Failed" end
         local test = {
             _testName = testName,
             _testFunction = testFunction,
@@ -59,7 +60,9 @@ local test1 = Test:new(
         local experimental = block:getId()
 
         return experimental
-    end, "4 big guys", "Test1 failed!")
+    end, "4 big guys")
+
+
 
 local test2 = Test:new(
     "Whats 9 + 10",
