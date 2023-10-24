@@ -50,7 +50,7 @@ Test = {
     end
 }
 
-local test1 = Test:new(
+local blockOne = Test:new(
     "`getId` on `Block` object",
     function()
         local id = "4 big guys"
@@ -62,6 +62,15 @@ local test1 = Test:new(
         return experimental
     end, "4 big guys")
 
+local blockTwo = Test:new(
+    "`getAge` on `Block` object",
+    function()
+        local block = Block:new()
+
+        local experimental = block:getAge()
+
+        return experimental
+    end, 0)
 
 
 local test2 = Test:new(
@@ -71,6 +80,6 @@ local test2 = Test:new(
     end, 21, "this fuckin test failed wat da hell"
 )
 
-Tester:addTest(test1)
-Tester:addTest(test2)
+Tester:addTest(blockOne)
+Tester:addTest(blockTwo)
 Tester:runTests()

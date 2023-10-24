@@ -5,8 +5,12 @@ require("constants")
 
 Block = {
     new = function(self, id, oldBlock)
+        if oldBlock ~= nil then -- If a block is being provided, copy it onto the nil properties
+            if id == nil then id = oldBlock:getId() end -- Don't overwrite the given arguments
+        end
+
         local block = {
-            _id = id or oldBlock:getId() or nil,
+            _id = id or nil,
             _age = 0 -- Always reset this, when an item is dropped, or enters an inventory, its age should be reset
         }
         setmetatable(block, {

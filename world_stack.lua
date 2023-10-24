@@ -4,7 +4,12 @@ require("stack")
 
 WorldStack = {
     new = function(self, stack, maxAge, oldWorldStack)
-        local worldStack = Stack:new(nil, nil, stack or oldWorldStack:getStack()) -- Make a new stack or else bad things happen
+        if oldWorldStack ~= nil then -- `Block` explains this
+            if stack == nil then stack = oldWorldStack:getStack() end
+            if maxAge == nil then maxAge = oldWorldStack:getMaxAge() end         
+        end
+
+        local worldStack = Stack:new(nil, nil, stack) -- Make a new stack or else bad things happen
 
         setmetatable(worldStack, {
             __index = self,
@@ -17,7 +22,7 @@ WorldStack = {
         -- Note: /stack.lua explains how these can be optimized
 
         -- set WorldStack properties
-        worldStack._maxAge = maxAge
+        worldStack._maxAge = maxAge or 300
         return worldStack
     end,
 

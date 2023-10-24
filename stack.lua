@@ -6,7 +6,12 @@ MAX_NUMBER = 64
 
 Stack = {
     new = function(self, block, number, oldStack)
-        local stack = Block:new(nil, block or oldStack:getBlock()) -- Make a new block or else bad things happen
+        if oldStack ~= nil then -- `Block` explains this
+            if block == nil then block = oldStack:getBlock() end
+            if number == nil then number = oldStack:getNumber() end
+        end
+
+        local stack = Block:new(nil, block) -- Make a new block or else bad things happen
 
         setmetatable(stack, {
             __index = self,
@@ -22,7 +27,7 @@ Stack = {
         -- be moved outside of the class to avoid overhead upon Stack creation.
 
         -- Set Stack attributes
-        stack._number = number or oldStack:getNumber() or 0
+        stack._number = number or 0
         return stack
     end,
 
