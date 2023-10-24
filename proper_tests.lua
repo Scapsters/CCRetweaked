@@ -1,5 +1,6 @@
 ---@diagnostic disable: redefined-local
 require("world_stack")
+require("inventory")
 
 local Tester = {
     _tests = {n = 0},
@@ -106,6 +107,40 @@ local stackInheritanceTests = Test:new(
         local stack = Stack:new(block, 32)
 
         local expected = id
+        local actual = stack:getId()
+        if actual ~= expected then
+            return Error:new(expected, actual, "Id set wrong on creation")
+        end
+
+        local expected = 0
+        local actual = stack:getAge()
+        if actual ~= expected then
+            return Error:new(expected, actual, "Age set wrong on creation")
+        end
+
+        for i=1, 16 do stack:_tick() end
+
+        local expected = 16
+        local actual = stack:getAge()
+        if actual ~= expected then
+            return Error:new(expected, actual, "tick() didnt work")
+        end
+
+        stack:resetAge()
+        local expected = 0
+        local actual = stack:getAge()
+        if actual ~= expected then
+            return Error:new(expected, actual, "resetAge didnt work")
+        end
+    end
+)
+
+local stackInheritanceTestsDefault = Test:new(
+    "stackInheritanceTestsDefault",
+    function()
+        local stack = Stack:new()
+
+        local expected = nil
         local actual = stack:getId()
         if actual ~= expected then
             return Error:new(expected, actual, "Id set wrong on creation")
@@ -386,9 +421,57 @@ local worldStackInheritanceTests = Test:new(
     end
 )
 
+local inventoryTests = Test:new(
+    "inventoryTests",
+    function()
+        local inventory = Inventory:new()
+
+        local expected = 1
+        local actual = inventory:getSelectedSlot()
+        if actual ~= expected then
+            return Error:new(expected, actual, "getSelectedSlot is plain wrong")
+        end
+
+        inventory:select(4)
+
+        local expected = 4
+        local actual = inventory:getSelectedSlot()
+        if actual ~= expected then
+            return Error:new(expected, actual, "select didnt work")
+        end
+
+        inventory:select(17)
+
+        local expected = 1
+        local actual = inventory:getSelectedSlot()
+        if actual ~= expected then
+            return Error:new(expected, actual, "select wraparound didnt work")
+        end
+
+        local block = Block:new("stella arcanum")
+        local stack = Stack:new(block, 32)
+
+        stack:takeItem(inventory:pickUp(stack))
+
+        local expected = 0
+        local actual = stack:getNumber()
+        if actual ~= expected then
+            return Error:new(expected, actual, "pickUp didnt remove properly from stack")
+        end
+
+        local expected = 32
+        local actual = inventory:getSelectedStack():getNumber()
+        if actual ~= expected then
+            return Error:new(expected, actual, "pickUp didnt add properly to inventory")
+        end
+    end
+)
+
 Tester:addTest(blockTests)
 Tester:addTest(stackInheritanceTests)
+Tester:addTest(stackInheritanceTestsDefault)
 Tester:addTest(stackTests)
 Tester:addTest(worldStackInheritanceTests)
 Tester:addTest(worldStackTests)
+Tester:addTest(inventoryTests)
 Tester:runTests()
