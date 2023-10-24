@@ -8,6 +8,7 @@ WorldStack = {
             if stack == nil then stack = oldWorldStack:getStack() end
             if maxAge == nil then maxAge = oldWorldStack:getMaxAge() end         
         end
+        if stack == nil then stack = Stack:new() end
 
         local worldStack = Stack:new(nil, nil, stack) -- Make a new stack or else bad things happen
 

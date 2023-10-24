@@ -10,6 +10,7 @@ Stack = {
             if block == nil then block = oldStack:getBlock() end
             if number == nil then number = oldStack:getNumber() end
         end
+        if block == nil then block = Block:new() end
 
         local stack = Block:new(nil, block) -- Make a new block or else bad things happen
 
