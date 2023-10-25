@@ -26,7 +26,6 @@ Inventory = {
     _setStack = function(self, slot, stack) self._stacks[slot] = stack end,
 
     pickUp = function(self, stack)
-        local next = next -- For efficiency
         local targetID = stack:getId()
         local number = stack:getNumber()
 
