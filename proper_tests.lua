@@ -239,7 +239,7 @@ local function worldStackInheritanceTests()
 end
 
 local function inventoryTests ()
-    local checks = CheckBundle:new()
+    local checks = CheckBundle:new("inventoryTests")
 
     local inventory = Inventory:new()
 
