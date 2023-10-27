@@ -2,60 +2,71 @@
 require("world_stack")
 require("inventory")
 
-local Tester = {
-    _tests = {n = 0},
+local Checker = {
+    _checkBundles = {},
 
-    addTest = function(self, test)
-        self._tests[self._tests.n + 1] = test
-        self._tests.n = self._tests.n + 1
+    addCheckBundle = function(self, test)
+        self._checkBundles[#self._checkBundles + 1] = test
     end,
 
-    _doesPass = function(test)
-        return test()
-    end,
-
-    runTests = function(self)
-        for i,test in pairs(self._tests) do
-            if i == "n" then return end -- Dont call `run` on the integer...
+    runChecks = function(self)
+        for i,checkBundle in pairs(self._checkBundles) do
             io.write(i..": ")
-            test:run()
+            checkBundle:run()
         end
     end
 }
 
-Test = {
-    new = function(self, testName, testFunction)
-        local test = {
-            _testName = testName,
-            _testFunction = testFunction
+CheckBundle = {
+    new = function(self, name, tests)
+        local checkBundle = {
+            _name = name,
+            _checks = tests or {}
         }
-        setmetatable(test, {__index = self})
-        return test
+        setmetatable(checkBundle, {__index = self})
+        return checkBundle
+    end,
+
+    add = function(self, actual, expected, description)
+        local check = Check:new(actual, expected, description)
+        self._checks[#self._checks + 1] = check
     end,
 
     run = function(self)
-        io.write("["..self._testName.."] ")
-
-        local result = self._testFunction()
-
-        if result then print(result)
-        else print("All tests passed")
+        local numberFailedChecks = 0
+        for index, check in pairs(self._checks) do
+            local result = check:run()
+            if result then
+                print(result)
+                numberFailedChecks = numberFailedChecks + 1
+            end
+        end
+        if numberFailedChecks == 0 then
+            print(self._name..": All checks passed")
+        else
+            print(self._name..": "..numberFailedChecks.." checks failed")
         end
     end
 }
 
-Error = {
-    new = function(self, expected, actual, description)
-        local error = {
-            _expected = expected,
+Check = {
+    new = function(self, actual, expected, description)
+        local check = {
             _actual = actual,
+            _expected = expected,
             _description = description
         }
-        setmetatable(error, {
+        setmetatable(check,{
             __index = self,
             __tostring = self.__tostring
         })
-        return error
+        return check
+    end,
+
+    run = function(self)
+        if self._actual ~= self._expected then
+            return self
+        end -- If there is no result, return nothing
     end,
 
     __tostring = function(self)
@@ -63,415 +74,196 @@ Error = {
     end
 }
 
+local function blockChecks()
+    local checks = CheckBundle:new("blockChecks")
 
-local blockTests = Test:new(
-    "blockTests",
-    function()
-        local id = "stella arcanum"
-        local block = Block:new(id)
+    local id = "stella_arcanum"
+    local block = Block:new(id)
 
-        local expected = id
-        local actual = block:getId()
-        if actual ~= expected then
-            return Error:new(expected, actual, "Id set wrong on creation")
-        end
+    checks:add(block:getId(), id, "Id set wrong on creation")
+    checks:add(block:getAge(), 0, "Age set wrong on creation")
 
-        local expected = 0
-        local actual = block:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "Age set wrong on creation")
-        end
-
-        for i=1, 16 do block:_tick() end
-
-        local expected = 16
-        local actual = block:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "tick() didnt work")
-        end
-
-        block:resetAge()
-        local expected = 0
-        local actual = block:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "resetAge didnt work")
-        end
+    for i=1, 16 do
+        block:_tick()
     end
-)
 
-local stackInheritanceTests = Test:new(
-    "stackInheritanceTests",
-    function()
-        local id = "stella arcanum"
-        local block = Block:new(id)
-        local stack = Stack:new(block, 32)
+    checks:add(block:getAge(), 16, "`_tick` did not change age")
+    block:resetAge()
+    checks:add(block:getAge(), 0, "`resetAge` didn't")
 
-        local expected = id
-        local actual = stack:getId()
-        if actual ~= expected then
-            return Error:new(expected, actual, "Id set wrong on creation")
-        end
+    return checks
+end
 
-        local expected = 0
-        local actual = stack:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "Age set wrong on creation")
-        end
+local function stackInheritanceTests()
+    local checks = CheckBundle:new("stackInheritanceChecks")
 
-        for i=1, 16 do stack:_tick() end
+    local id = "stella_arcanum"
+    local block = Block:new(id)
+    local stack = Stack:new(block, 16)
 
-        local expected = 16
-        local actual = stack:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "tick() didnt work")
-        end
+    checks:add(stack:getId(), id, "Id set wrong on creation")
+    checks:add(stack:getAge(), 0, "Age set wrong on creation")
 
-        stack:resetAge()
-        local expected = 0
-        local actual = stack:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "resetAge didnt work")
-        end
+    for i=1, 16 do
+        stack:_tick()
     end
-)
 
-local stackInheritanceTestsDefault = Test:new(
-    "stackInheritanceTestsDefault",
-    function()
-        local stack = Stack:new()
+    checks:add(stack:getAge(), 16, "`_tick` did not change age")
+    stack:resetAge()
+    checks:add(stack:getAge(), 0, "`resetAge` didn't")
 
-        local expected = nil
-        local actual = stack:getId()
-        if actual ~= expected then
-            return Error:new(expected, actual, "Id set wrong on creation")
-        end
+    return checks
+end
 
-        local expected = 0
-        local actual = stack:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "Age set wrong on creation")
-        end
+local function stackInheritanceTestsDefault()
+    local checks = CheckBundle:new("stackInheritanceTestsDefault")
 
-        for i=1, 16 do stack:_tick() end
+    local stack = Stack:new()
 
-        local expected = 16
-        local actual = stack:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "tick() didnt work")
-        end
+    checks:add(stack:getId(), nil, "Id set wrong on creation")
+    checks:add(stack:getAge(), 0 ,"Age set wrong on creation")
 
-        stack:resetAge()
-        local expected = 0
-        local actual = stack:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "resetAge didnt work")
-        end
+    for i=1, 16 do
+        stack:_tick()
     end
-)
 
-local stackTests = Test:new(
-    "stackTests",
-    function()
-        local id = "stella arcanum"
-        local block = Block:new(id)
-        local stack = Stack:new(block, 32)
+    checks:add(stack:getAge(), 16, "`_tick` did not change age")
 
-        local expected = 32
-        local actual = stack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "age set wrong on creation")
-        end
+    stack:resetAge()
 
-        local expected = id
-        local actual = stack:getBlock():getId()
-        if actual ~= expected then
-            return Error:new(expected, actual, "getBlock didn't work")
-        end
+    checks:add(stack:getAge(), 0, "`resetAge` didn't")
 
-        local expected = 0
-        local actual = stack:addItem(16)
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem didn't return properly (partial fill case)")
-        end
+    return checks
+end
 
-        local expected = 48
-        local actual = stack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem didn't add to number")
-        end
+local function stackTests()
+    local checks = CheckBundle:new("stackTests")
 
-        local expected = 16
-        local actual = stack:addItem(32)
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem didn't return properly (overfill case)")
-        end
+    local id = "stella arcanum"
+    local block = Block:new(id)
+    local stack = Stack:new(block, 32)
 
-        local expected = 64
-        local actual = stack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem didn't add to number properly (overfill limit failed)")
-        end
+    checks:add(stack:getNumber(), 32, "age set wrong on creation")
+    checks:add(stack:getBlock():getId(), id, "getBlock didn't")
 
-        local expected = 0
-        local actual = stack:addItem(0)
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem didn't return properly (0 case)")
-        end
+    checks:add(stack:addItem(16), 0, "addItem didn't return properly (partial fill case)")
+    checks:add(stack:getNumber(), 48, "addItem didn't add to number (partial fill case)")
 
-        local expected = 64
-        local actual = stack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem changed number on 0 case while full")
-        end
+    checks:add(stack:addItem(32), 16, "addItem didn't return properly (overfill case)")
+    checks:add(stack:getNumber(), 64, "addItem didn't add to number properly (overfill case)")
+    checks:add(stack:isEmpty(), false, "isEmpty is super fucking wrong")
 
-        local expected = 64
-        local actual = stack:takeItem(100)
-        if actual ~= expected then
-            return Error:new(expected, actual, "takeItem returned improperly (overtake case)")
-        end
+    checks:add(stack:addItem(0), 0, "additem didn't return properly (0 case)")
+    checks:add(stack:getNumber(), 64, "addItem changed number while full (0 case)")
 
-        local expected = 0
-        local actual = stack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "takeItem didnt empty stack on overtake case")
-        end
+    checks:add(stack:addItem(16), 16, "addItem didn't return properly (entirely overfill case)")
+    checks:add(stack:getNumber(), 64, "addItem changed number while full (entirely overfill case)")
 
-        local expected = 0
-        local actual = stack:takeItem(10)
-        if actual ~= expected then
-            return Error:new(expected, actual, "take Item returned improperly (take on empty stack case)")
-        end
+    checks:add(stack:takeItem(100), 64, "takeItem returned improperly (overtake case)")
+    checks:add(stack:getNumber(), 0, "takeItem didn't empty stack (overtake case)")
 
-        local expected = 0
-        local actual = stack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "number changed on takeItem on an empty stack")
-        end
+    checks:add(stack:takeItem(10), 0, "takeItem returned improperly (take on empty case)")
+    checks:add(stack:getNumber(), 0, "takeItem changed number on an empty stack (take on empty case)")
+    checks:add(stack:isEmpty(), true, "isEmpty is plain fucking wrong :sob:")
 
-        local expected = true
-        local actual = stack:isEmpty()
-        if actual ~= expected then
-            return Error:new(expected, actual, "isEmpty is plain fucking wrong :sob:")
-        end
+    return checks
+end
+
+local function worldStackTests()
+    local checks = CheckBundle:new("worldStackTests")
+
+    local id = "stella arcanum"
+    local block = Block:new(id)
+    local stack = Stack:new(block, 32)
+    local worldStack = WorldStack:new(stack)
+
+    checks:add(worldStack:getMaxAge(), 300, "maxAge isn't set properly by default")
+
+    local worldStack = WorldStack:new(stack, 10)
+
+    checks:add(worldStack:getMaxAge(), 10, "maxAge isn't set properly by argument")
+
+    checks:add(worldStack:getStack():getId(), id, "getStack doesn't work")
+    checks:add(worldStack:getStack():getBlock():getId(), id, "getStack then getBlock doesn't work somehow")
+
+    checks:add(worldStack:shouldDespawn(), false, "shouldDespawn is wrong")
+    for i=1, 11 do worldStack:_tick() end
+    checks:add(worldStack:shouldDespawn(), true, "shouldDespawn is wrong")
+
+    return checks
+end
+
+local function worldStackInheritanceTests()
+    local checks = CheckBundle:new("worldStackInheritanceTests")
+
+    local id = "stella arcanum"
+    local block = Block:new(id)
+    local stack = Stack:new(block, 32)
+    local worldStack = WorldStack:new(stack, 10)
+
+    checks:add(stack:getNumber(), 32, "age set wrong on creation")
+    checks:add(worldStack:getBlock():getId(), id, "getBlock didn't")
+
+    checks:add(worldStack:addItem(16), 0, "addItem didn't return properly (partial fill case)")
+    checks:add(worldStack:getNumber(), 48, "addItem didn't add to number (partial fill case)")
+
+    checks:add(worldStack:addItem(32), 16, "addItem didn't return properly (overfill case)")
+    checks:add(worldStack:getNumber(), 64, "addItem didn't add to number properly (overfill case)")
+    checks:add(worldStack:isEmpty(), false, "isEmpty is super fucking wrong")
+
+    checks:add(worldStack:addItem(0), 0, "additem didn't return properly (0 case)")
+    checks:add(worldStack:getNumber(), 64, "addItem changed number while full (0 case)")
+
+    checks:add(worldStack:addItem(16), 16, "addItem didn't return properly (entirely overfill case)")
+    checks:add(worldStack:getNumber(), 64, "addItem changed number while full (entirely overfill case)")
+
+    checks:add(worldStack:takeItem(100), 64, "takeItem returned improperly (overtake case)")
+    checks:add(worldStack:getNumber(), 0, "takeItem didn't empty worldStack (overtake case)")
+
+    checks:add(worldStack:takeItem(10), 0, "takeItem returned improperly (take on empty case)")
+    checks:add(worldStack:getNumber(), 0, "takeItem changed number on an empty worldStack (take on empty case)")
+    checks:add(worldStack:isEmpty(), true, "isEmpty is plain fucking wrong :sob:")
+
+    checks:add(worldStack:getId(), id, "Id set wrong on creation")
+    checks:add(worldStack:getAge(), 0, "Age set wrong on creation")
+
+    for i=1, 16 do
+        worldStack:_tick()
     end
-)
 
-local worldStackTests = Test:new(
-    "worldStackTests",
-    function()
-        local id = "stella arcanum"
-        local block = Block:new(id)
-        local stack = Stack:new(block, 32)
-        local worldStack = WorldStack:new(stack)
+    checks:add(worldStack:getAge(), 16, "`_tick` did not change age")
+    worldStack:resetAge()
+    checks:add(worldStack:getAge(), 0, "`resetAge` didn't")
 
-        local expected = 300
-        local actual = worldStack:getMaxAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "maxAge isnt set properly by default")
-        end
+    return checks
+end
 
-        local worldStack = WorldStack:new(stack, 10)
+local function inventoryTests ()
+    local checks = CheckBundle:new()
 
-        local expected = 10
-        local actual = worldStack:getMaxAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "maxAge isnt set properly by argument")
-        end
+    local inventory = Inventory:new()
 
-        local expected = id
-        local actual = worldStack:getStack():getId()
-        if actual ~= expected then
-            return Error:new(expected, actual, "getStack doesn't work")
-        end
+    checks:add(inventory:getSelectedSlot(), 1, "getSelectedSlot is set wrong on creation")
+    inventory:select(4)
+    checks:add(inventory:getSelectedSlot(), 4, "select doesn't work")
+    inventory:select(17)
+    checks:add(inventory:getSelectedSlot(), 1, "select didn't work (wraparound case)")
 
-        local expected = id
-        local actual = worldStack:getStack():getBlock():getId()
-        if actual ~= expected then
-            return Error:new(expected, actual, "getStack then getBlock doesn't work somehow")
-        end
+    local block = Block:new("stella arcanum")
+    local stack = Stack:new(block, 32)
+    stack:takeItem(inventory:pickUp(stack))
 
-        local expected = false
-        local actual = worldStack:shouldDespawn()
-        if actual ~= expected then
-            return Error:new(tostring(expected), tostring(actual), "shouldDespawn is wrong")
-        end
+    Check:new(stack:getNumber(), 0, "pickUp didnt remove properly from stack")
+    Check:new(inventory:getSelectedStack():getNumber(), 32, "pickUp didnt add properly to inventory")
 
-        for i=1, 11 do worldStack:_tick() end
+    return checks
+end
 
-        local expected = true
-        local actual = worldStack:shouldDespawn()
-        if actual ~= expected then
-            return Error:new(tostring(expected), tostring(actual), "shouldDespawn is wrong")
-        end
-    end
-)
-
-local worldStackInheritanceTests = Test:new(
-    "worldStackInheritanceTests",
-    function()
-        local id = "stella arcanum"
-        local block = Block:new(id)
-        local stack = Stack:new(block, 32)
-        local worldStack = WorldStack:new(stack, 10)
-
-        local expected = id
-        local actual = worldStack:getId()
-        if actual ~= expected then
-            return Error:new(expected, actual, "Id set wrong on creation")
-        end
-
-        local expected = 0
-        local actual = worldStack:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "Age set wrong on creation")
-        end
-
-        for i=1, 16 do worldStack:_tick() end
-
-        local expected = 16
-        local actual = worldStack:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "tick() didnt work")
-        end
-
-        worldStack:resetAge()
-        local expected = 0
-        local actual = worldStack:getAge()
-        if actual ~= expected then
-            return Error:new(expected, actual, "resetAge didnt work")
-        end
-
-        local expected = 32
-        local actual = worldStack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "age set wrong on creation")
-        end
-
-        local expected = id
-        local actual = worldStack:getBlock():getId()
-        if actual ~= expected then
-            return Error:new(expected, actual, "getBlock didn't work")
-        end
-
-        local expected = 0
-        local actual = worldStack:addItem(16)
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem didn't return properly (partial fill case)")
-        end
-
-        local expected = 48
-        local actual = worldStack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem didn't add to number")
-        end
-
-        local expected = 16
-        local actual = worldStack:addItem(32)
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem didn't return properly (overfill case)")
-        end
-
-        local expected = 64
-        local actual = worldStack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem didn't add to number properly (overfill limit failed)")
-        end
-
-        local expected = 0
-        local actual = worldStack:addItem(0)
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem didn't return properly (0 case)")
-        end
-
-        local expected = 64
-        local actual = worldStack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "addItem changed number on 0 case while full")
-        end
-
-        local expected = 64
-        local actual = worldStack:takeItem(100)
-        if actual ~= expected then
-            return Error:new(expected, actual, "takeItem returned improperly (overtake case)")
-        end
-
-        local expected = 0
-        local actual = worldStack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "takeItem didnt empty stack on overtake case")
-        end
-
-        local expected = 0
-        local actual = worldStack:takeItem(10)
-        if actual ~= expected then
-            return Error:new(expected, actual, "take Item returned improperly (take on empty stack case)")
-        end
-
-        local expected = 0
-        local actual = worldStack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "number changed on takeItem on an empty stack")
-        end
-
-        local expected = true
-        local actual = worldStack:isEmpty()
-        if actual ~= expected then
-            return Error:new(expected, actual, "isEmpty is plain fucking wrong :sob:")
-        end
-    end
-)
-
-local inventoryTests = Test:new(
-    "inventoryTests",
-    function()
-        local inventory = Inventory:new()
-
-        local expected = 1
-        local actual = inventory:getSelectedSlot()
-        if actual ~= expected then
-            return Error:new(expected, actual, "getSelectedSlot is plain wrong")
-        end
-
-        inventory:select(4)
-
-        local expected = 4
-        local actual = inventory:getSelectedSlot()
-        if actual ~= expected then
-            return Error:new(expected, actual, "select didnt work")
-        end
-
-        inventory:select(17)
-
-        local expected = 1
-        local actual = inventory:getSelectedSlot()
-        if actual ~= expected then
-            return Error:new(expected, actual, "select wraparound didnt work")
-        end
-
-        local block = Block:new("stella arcanum")
-        local stack = Stack:new(block, 32)
-
-        stack:takeItem(inventory:pickUp(stack))
-
-        local expected = 0
-        local actual = stack:getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "pickUp didnt remove properly from stack")
-        end
-
-        local expected = 32
-        local actual = inventory:getSelectedStack():getNumber()
-        if actual ~= expected then
-            return Error:new(expected, actual, "pickUp didnt add properly to inventory")
-        end
-    end
-)
-
-Tester:addTest(blockTests)
-Tester:addTest(stackInheritanceTests)
-Tester:addTest(stackInheritanceTestsDefault)
-Tester:addTest(stackTests)
-Tester:addTest(worldStackInheritanceTests)
-Tester:addTest(worldStackTests)
-Tester:addTest(inventoryTests)
-Tester:runTests()
+Checker:addCheckBundle(blockChecks())
+Checker:addCheckBundle(stackInheritanceTests())
+Checker:addCheckBundle(stackInheritanceTestsDefault())
+Checker:addCheckBundle(stackTests())
+Checker:addCheckBundle(worldStackTests())
+Checker:addCheckBundle(worldStackInheritanceTests())
+Checker:addCheckBundle(inventoryTests())
+Checker:runChecks()
