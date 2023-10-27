@@ -72,7 +72,7 @@ Check = {
     __tostring = function(self)
         return self._description.." | Expected: "..self._expected.." Actual: "..self._actual
     end
-} 
+}
 
 local function blockChecks()
     local checks = CheckBundle:new("blockChecks")
