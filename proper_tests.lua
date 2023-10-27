@@ -251,7 +251,7 @@ local function inventoryTests ()
 
     local block = Block:new("stella arcanum")
     local stack = Stack:new(block, 32)
-    stack:takeItem(inventory:pickUp(stack))
+    inventory:pickUp(stack)
 
     Check:new(stack:getNumber(), 0, "pickUp didnt remove properly from stack")
     Check:new(inventory:getSelectedStack():getNumber(), 32, "pickUp didnt add properly to inventory")

@@ -26,20 +26,22 @@ Inventory = {
     _setStack = function(self, slot, stack) self._stacks[slot] = stack end,
 
     pickUp = function(self, stack)
+        -- Returns how many items were placed into the inventory
         local targetID = stack:getId()
         local number = stack:getNumber()
 
         local stacks = self:_getStacks()
         for index, slot in pairs(stacks) do
             if slot:getNumber() == 0 then
-                -- Empty slot. Dump it in the first slot and return 0
+                -- Empty slot. Dump it in the first slot and return number
                 self:_setStack(index, Stack:new(nil, nil, stack)) -- Dereference stack
+                stack:takeItem(number) -- Empty the stack
                 return number
             end
             -- If the slot is of the same type, add as many as you can, continue
             local id = slot:getId()
             if id == targetID then
-                number = slot:addItem(number)
+                number = stack:takeItem(slot:addItem(number)) -- remove as many items as possible, update number
             end
         end
 
