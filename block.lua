@@ -7,10 +7,10 @@ require("constants")
 ---@field public getAge function
 ---@field public resetAge function
 ---@field public toString function
+---@field public tick function
 ---@field private _id string
 ---@field private _age number
 ---@field private _setAge function
----@field private tick function
 ---@field private __tostring function
 Block = {}
 
