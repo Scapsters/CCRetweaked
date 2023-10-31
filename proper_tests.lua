@@ -3,6 +3,10 @@ require("world_stack")
 ---@module 'inventory'
 require("inventory")
 
+---@class Checker
+---@field addCheckBundle function
+---@field runChecks function
+---@field private _checkBundles CheckBundle[]
 local Checker = {
     _checkBundles = {},
 
@@ -18,6 +22,12 @@ local Checker = {
     end
 }
 
+---@class CheckBundle
+---@field public new function
+---@field public add function
+---@field public run function
+---@field private _name string
+---@field private _checks Check[]
 CheckBundle = {
     new = function(self, name, tests)
         local checkBundle = {
@@ -50,6 +60,13 @@ CheckBundle = {
     end
 }
 
+---@class Check
+---@field new function
+---@field run function
+---@field _actual number|string|boolean
+---@field _expected number|string|boolean
+---@field _description string
+---@field private __tostring function
 Check = {
     new = function(self, actual, expected, description)
         local check = {
