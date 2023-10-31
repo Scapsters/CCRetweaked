@@ -9,7 +9,7 @@ require('constants')
 ---@field private _current function
 Clock = {}
 
-Clock._period = 1000 -- In seconds
+Clock._period = CLOCK_PERIOD -- In seconds
 
 Clock._start = os.time()
 
