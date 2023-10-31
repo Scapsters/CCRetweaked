@@ -296,13 +296,13 @@ local function inventoryTests ()
 
     inventory:select(2)
     local stack4 = Stack:new(block, 0)
-    stack4:addItem(inventory:takeItem(64))
+    inventory:moveItem(stack4, 64)
 
     Check:new(inventory:getSelectedStack():getNumber(), 0, "takeItem did not remove items")
     Check:new(stack4:getNumber(), 16, "takeItem did not return the proper number")
 
     inventory:select(1)
-    inventory:getSelectedStack():addItem(stack4:addItem(inventory:takeItem(64)))
+    inventory:moveItem(stack4, 64)
 
     Check:new(inventory:getSelectedStack():getNumber(), 16, "inventory removed too many items from itself or the stack returned improperly from addItem")
     Check:new(stack4:getNumber(), 64, "inventory did not take the proper amount of items from itself")

@@ -9,7 +9,7 @@ INVENTORY_SIZE = 16
 ---@field public select function
 ---@field public getSelectedStack function
 ---@field public pickUp function
----@field public takeItem function
+---@field public moveItem function
 ---@field private _getStacks function
 ---@field private _setStack function
 ---@field private _stacks Stack[]
@@ -83,11 +83,16 @@ Inventory.pickUp = function(self, stack)
     return number
 end
 
---- Attempts to take items from the selected stack
+--- Attempts to take items from the selected stack and put them into the provided stack
+--- Side effects include affecting the number in toStack, the stacks in Inventory
 ---@param self Inventory
+---@param toStack Stack
 ---@param amount integer
 ---@return integer amount How many items were taken
-Inventory.takeItem = function(self, amount)
-    local stack = self:getSelectedStack()
-    return stack:takeItem(amount)
+Inventory.moveItem = function(self, toStack, amount)
+    local fromStack = self:getSelectedStack()
+    local itemsTaken = fromStack:takeItem(amount)
+    local leftoverItems = toStack:addItem(itemsTaken)
+    fromStack:addItem(leftoverItems)
+    return itemsTaken - leftoverItems
 end
