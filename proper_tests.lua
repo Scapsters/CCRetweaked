@@ -1,5 +1,6 @@
----@diagnostic disable: redefined-local
+---@module 'world_stack'
 require("world_stack")
+---@module 'inventory'
 require("inventory")
 
 local Checker = {
