@@ -161,28 +161,54 @@ local function stackTests()
     local block = Block:new(id)
     local stack = Stack:new(block, 32)
 
-    checks:add(stack:getNumber(), 32, "age set wrong on creation")
-    checks:add(stack:getBlock():getId(), id, "getBlock didn't")
+    local function newTests()
+        checks:add(stack:getNumber(), 32, "age set wrong on creation")
+        checks:add(stack:getBlock():getId(), id, "getBlock didn't")
+    end
 
-    checks:add(stack:addItem(16), 0, "addItem didn't return properly (partial fill case)")
-    checks:add(stack:getNumber(), 48, "addItem didn't add to number (partial fill case)")
+    local function addItemTestPartialFill()
+        checks:add(stack:addItem(16), 0, "addItem didn't return properly (partial fill case)")
+        checks:add(stack:getNumber(), 48, "addItem didn't add to number (partial fill case)")
+    end
 
-    checks:add(stack:addItem(32), 16, "addItem didn't return properly (overfill case)")
-    checks:add(stack:getNumber(), 64, "addItem didn't add to number properly (overfill case)")
-    checks:add(stack:isEmpty(), false, "isEmpty is super fucking wrong")
+    local function addItemTestOverfill()
+        checks:add(stack:addItem(32), 16, "addItem didn't return properly (overfill case)")
+        checks:add(stack:getNumber(), 64, "addItem didn't add to number properly (overfill case)")
+        checks:add(stack:isEmpty(), false, "isEmpty is super fucking wrong")
+    end
 
-    checks:add(stack:addItem(0), 0, "additem didn't return properly (0 case)")
-    checks:add(stack:getNumber(), 64, "addItem changed number while full (0 case)")
+    local function addItemTestZero()
+        checks:add(stack:addItem(0), 0, "additem didn't return properly (0 case)")
+        checks:add(stack:getNumber(), 64, "addItem changed number while full (0 case)")
+    end
 
-    checks:add(stack:addItem(16), 16, "addItem didn't return properly (entirely overfill case)")
-    checks:add(stack:getNumber(), 64, "addItem changed number while full (entirely overfill case)")
+    local function addItemTestEntirelyOverfill()
+        checks:add(stack:addItem(16), 16, "addItem didn't return properly (entirely overfill case)")
+        checks:add(stack:getNumber(), 64, "addItem changed number while full (entirely overfill case)")
+    end
 
-    checks:add(stack:takeItem(100), 64, "takeItem returned improperly (overtake case)")
-    checks:add(stack:getNumber(), 0, "takeItem didn't empty stack (overtake case)")
+    local function takeItemTestOvertake()
+        checks:add(stack:takeItem(100), 64, "takeItem returned improperly (overtake case)")
+        checks:add(stack:getNumber(), 0, "takeItem didn't empty stack (overtake case)")
+    end
 
-    checks:add(stack:takeItem(10), 0, "takeItem returned improperly (take on empty case)")
-    checks:add(stack:getNumber(), 0, "takeItem changed number on an empty stack (take on empty case)")
-    checks:add(stack:isEmpty(), true, "isEmpty is plain fucking wrong :sob:")
+    local function takeItemTestEmpty()
+        checks:add(stack:takeItem(10), 0, "takeItem returned improperly (take on empty case)")
+        checks:add(stack:getNumber(), 0, "takeItem changed number on an empty stack (take on empty case)")
+    end
+
+    local function isEmptyTestEmpty()
+        checks:add(stack:isEmpty(), true, "isEmpty is plain fucking wrong :sob:")
+    end
+
+    newTests()
+    addItemTestPartialFill()
+    addItemTestOverfill()
+    addItemTestZero()
+    addItemTestEntirelyOverfill()
+    takeItemTestOvertake()
+    takeItemTestEmpty()
+    isEmptyTestEmpty()
 
     return checks
 end
@@ -194,19 +220,23 @@ local function worldStackTests()
     local block = Block:new(id)
     local stack = Stack:new(block, 32)
     local worldStack = WorldStack:new(stack)
+    local worldStack2 = WorldStack:new(stack, 10)
 
-    checks:add(worldStack:getMaxAge(), 300, "maxAge isn't set properly by default")
+    local function newTests()
+        checks:add(worldStack:getMaxAge(), 300, "maxAge isn't set properly by default")
+        checks:add(worldStack2:getMaxAge(), 10, "maxAge isn't set properly by argument")
+        checks:add(worldStack2:getStack():getId(), id, "getStack doesn't work")
+        checks:add(worldStack2:getStack():getBlock():getId(), id, "getStack then getBlock doesn't work somehow")
+    end
 
-    local worldStack = WorldStack:new(stack, 10)
+    local function shouldDespawnTests()
+        checks:add(worldStack2:shouldDespawn(), false, "shouldDespawn is wrong")
+        for i=1, 11 do worldStack2:tick() end
+        checks:add(worldStack2:shouldDespawn(), true, "shouldDespawn is wrong")
+    end
 
-    checks:add(worldStack:getMaxAge(), 10, "maxAge isn't set properly by argument")
-
-    checks:add(worldStack:getStack():getId(), id, "getStack doesn't work")
-    checks:add(worldStack:getStack():getBlock():getId(), id, "getStack then getBlock doesn't work somehow")
-
-    checks:add(worldStack:shouldDespawn(), false, "shouldDespawn is wrong")
-    for i=1, 11 do worldStack:tick() end
-    checks:add(worldStack:shouldDespawn(), true, "shouldDespawn is wrong")
+    newTests()
+    shouldDespawnTests()
 
     return checks
 end
@@ -219,39 +249,51 @@ local function worldStackInheritanceTests()
     local stack = Stack:new(block, 32)
     local worldStack = WorldStack:new(stack, 10)
 
-    checks:add(stack:getNumber(), 32, "age set wrong on creation")
-    checks:add(worldStack:getBlock():getId(), id, "getBlock didn't")
-
-    checks:add(worldStack:addItem(16), 0, "addItem didn't return properly (partial fill case)")
-    checks:add(worldStack:getNumber(), 48, "addItem didn't add to number (partial fill case)")
-
-    checks:add(worldStack:addItem(32), 16, "addItem didn't return properly (overfill case)")
-    checks:add(worldStack:getNumber(), 64, "addItem didn't add to number properly (overfill case)")
-    checks:add(worldStack:isEmpty(), false, "isEmpty is super fucking wrong")
-
-    checks:add(worldStack:addItem(0), 0, "additem didn't return properly (0 case)")
-    checks:add(worldStack:getNumber(), 64, "addItem changed number while full (0 case)")
-
-    checks:add(worldStack:addItem(16), 16, "addItem didn't return properly (entirely overfill case)")
-    checks:add(worldStack:getNumber(), 64, "addItem changed number while full (entirely overfill case)")
-
-    checks:add(worldStack:takeItem(100), 64, "takeItem returned improperly (overtake case)")
-    checks:add(worldStack:getNumber(), 0, "takeItem didn't empty worldStack (overtake case)")
-
-    checks:add(worldStack:takeItem(10), 0, "takeItem returned improperly (take on empty case)")
-    checks:add(worldStack:getNumber(), 0, "takeItem changed number on an empty worldStack (take on empty case)")
-    checks:add(worldStack:isEmpty(), true, "isEmpty is plain fucking wrong :sob:")
-
-    checks:add(worldStack:getId(), id, "Id set wrong on creation")
-    checks:add(worldStack:getAge(), 0, "Age set wrong on creation")
-
-    for i=1, 16 do
-        worldStack:tick()
+    local function newTests()
+        checks:add(stack:getNumber(), 32, "age set wrong on creation")
+        checks:add(worldStack:getBlock():getId(), id, "getBlock didn't")
+        checks:add(worldStack:getId(), id, "Id set wrong on creation")
+        checks:add(worldStack:getAge(), 0, "Age set wrong on creation")
     end
 
-    checks:add(worldStack:getAge(), 16, "`tick` did not change age")
-    worldStack:resetAge()
-    checks:add(worldStack:getAge(), 0, "`resetAge` didn't")
+    local function addItemTests()
+        checks:add(worldStack:addItem(16), 0, "addItem didn't return properly (partial fill case)")
+        checks:add(worldStack:getNumber(), 48, "addItem didn't add to number (partial fill case)")
+
+        checks:add(worldStack:addItem(32), 16, "addItem didn't return properly (overfill case)")
+        checks:add(worldStack:getNumber(), 64, "addItem didn't add to number properly (overfill case)")
+        checks:add(worldStack:isEmpty(), false, "isEmpty is super fucking wrong")
+
+        checks:add(worldStack:addItem(0), 0, "additem didn't return properly (0 case)")
+        checks:add(worldStack:getNumber(), 64, "addItem changed number while full (0 case)")
+
+        checks:add(worldStack:addItem(16), 16, "addItem didn't return properly (entirely overfill case)")
+        checks:add(worldStack:getNumber(), 64, "addItem changed number while full (entirely overfill case)")
+    end
+
+    local function takeItemTests()
+        checks:add(worldStack:takeItem(100), 64, "takeItem returned improperly (overtake case)")
+        checks:add(worldStack:getNumber(), 0, "takeItem didn't empty worldStack (overtake case)")
+
+        checks:add(worldStack:takeItem(10), 0, "takeItem returned improperly (take on empty case)")
+        checks:add(worldStack:getNumber(), 0, "takeItem changed number on an empty worldStack (take on empty case)")
+        checks:add(worldStack:isEmpty(), true, "isEmpty is plain fucking wrong :sob:")
+    end
+
+    local function tickTests()
+        for i=1, 16 do
+            worldStack:tick()
+        end
+
+        checks:add(worldStack:getAge(), 16, "`tick` did not change age")
+        worldStack:resetAge()
+        checks:add(worldStack:getAge(), 0, "`resetAge` didn't")
+    end
+
+    newTests()
+    addItemTests()
+    takeItemTests()
+    tickTests()
 
     return checks
 end
@@ -261,51 +303,65 @@ local function inventoryTests ()
 
     local inventory = Inventory:new()
 
-    checks:add(inventory:getSelectedSlot(), 1, "getSelectedSlot is set wrong on creation")
-    inventory:select(4)
-    checks:add(inventory:getSelectedSlot(), 4, "select doesn't work")
-    inventory:select(17)
-    checks:add(inventory:getSelectedSlot(), 1, "select didn't work (wraparound case)")
+    local function getSelectedSlotTests()
+        checks:add(inventory:getSelectedSlot(), 1, "getSelectedSlot is set wrong on creation")
+        inventory:select(4)
+        checks:add(inventory:getSelectedSlot(), 4, "select doesn't work")
+        inventory:select(17)
+        checks:add(inventory:getSelectedSlot(), 1, "select didn't work (wraparound case)")
+    end
 
-    local block = Block:new("stella arcanum")
-    local stack = Stack:new(block, 32)
-    inventory:pickUp(stack)
+    local function pickUpTests()
+        local block = Block:new("stella arcanum")
+        local stack = Stack:new(block, 32)
+        inventory:pickUp(stack)
 
-    Check:new(stack:getNumber(), 0, "pickUp didnt remove properly from stack")
-    Check:new(inventory:getSelectedStack():getNumber(), 32, "pickUp didnt add properly to inventory")
+        Check:new(stack:getNumber(), 0, "pickUp didnt remove properly from stack")
+        Check:new(inventory:getSelectedStack():getNumber(), 32, "pickUp didnt add properly to inventory")
 
-    local stack2 = Stack:new(block, 48)
-    inventory:pickUp(stack2)
+        local stack2 = Stack:new(block, 48)
+        inventory:pickUp(stack2)
 
-    Check:new(stack2:getNumber(), 0, "pickup didnt remoove properly from stack (2 stack dropoff case)")
-    Check:new(inventory:getSelectedStack():getNumber(), 64, "pickUp didnt add properly to inventory (2 stack dropoff case, 1st stack)")
+        Check:new(stack2:getNumber(), 0, "pickup didnt remoove properly from stack (2 stack dropoff case)")
+        Check:new(inventory:getSelectedStack():getNumber(), 64, "pickUp didnt add properly to inventory (2 stack dropoff case, 1st stack)")
 
-    inventory:select(2)
+        inventory:select(2)
 
-    Check:new(inventory:getSelectedStack():getNumber(), 16, "pickup didnt add properly to inventory (2 stack dropoff case, 2nd stack)")
+        Check:new(inventory:getSelectedStack():getNumber(), 16, "pickup didnt add properly to inventory (2 stack dropoff case, 2nd stack)")
 
-    local block2 = Block:new("diamond")
-    local stack3 = Stack:new(block2, 48)
-    inventory:pickUp(stack3)
-    inventory:select(3)
+        local block2 = Block:new("diamond")
+        local stack3 = Stack:new(block2, 48)
+        inventory:pickUp(stack3)
+        inventory:select(3)
 
-    Check:new(inventory:getSelectedStack():getNumber(), 48, "pickup didn't add properly to inventory (item 1 dropping off into and inventory with partial slots of item 2 case)")
+        Check:new(inventory:getSelectedStack():getNumber(), 48, "pickup didn't add properly to inventory (item 1 dropping off into and inventory with partial slots of item 2 case)")
+    end
 
-    inventory:select(4)
-    Check:new(inventory:getSelectedStack():getNumber(), 0, "a slot that should be 0 is not zero")
+    local function moveItemTests()
+        inventory:select(2)
+        local block = Block:new("stella arcanum")
+        local stack = Stack:new(block, 0)
+        inventory:moveItem(stack, 64)
 
-    inventory:select(2)
-    local stack4 = Stack:new(block, 0)
-    inventory:moveItem(stack4, 64)
+        Check:new(inventory:getSelectedStack():getNumber(), 0, "takeItem did not remove items")
+        Check:new(stack:getNumber(), 16, "takeItem did not return the proper number")
 
-    Check:new(inventory:getSelectedStack():getNumber(), 0, "takeItem did not remove items")
-    Check:new(stack4:getNumber(), 16, "takeItem did not return the proper number")
+        inventory:select(1)
+        inventory:moveItem(stack, 64)
 
-    inventory:select(1)
-    inventory:moveItem(stack4, 64)
+        Check:new(inventory:getSelectedStack():getNumber(), 16, "inventory removed too many items from itself or the stack returned improperly from addItem")
+        Check:new(stack:getNumber(), 64, "inventory did not take the proper amount of items from itself")
+    end
 
-    Check:new(inventory:getSelectedStack():getNumber(), 16, "inventory removed too many items from itself or the stack returned improperly from addItem")
-    Check:new(stack4:getNumber(), 64, "inventory did not take the proper amount of items from itself")
+    local function sideEffectTests()
+        inventory:select(4)
+        Check:new(inventory:getSelectedStack():getNumber(), 0, "a slot that should be 0 is not zero")
+    end
+
+    getSelectedSlotTests()
+    pickUpTests()
+    moveItemTests()
+    sideEffectTests()
 
     return checks
 end
