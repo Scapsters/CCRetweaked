@@ -85,10 +85,10 @@ local function blockChecks()
     checks:add(block:getAge(), 0, "Age set wrong on creation")
 
     for i=1, 16 do
-        block:_tick()
+        block:tick()
     end
 
-    checks:add(block:getAge(), 16, "`_tick` did not change age")
+    checks:add(block:getAge(), 16, "`tick` did not change age")
     block:resetAge()
     checks:add(block:getAge(), 0, "`resetAge` didn't")
 
@@ -106,10 +106,10 @@ local function stackInheritanceTests()
     checks:add(stack:getAge(), 0, "Age set wrong on creation")
 
     for i=1, 16 do
-        stack:_tick()
+        stack:tick()
     end
 
-    checks:add(stack:getAge(), 16, "`_tick` did not change age")
+    checks:add(stack:getAge(), 16, "`tick` did not change age")
     stack:resetAge()
     checks:add(stack:getAge(), 0, "`resetAge` didn't")
 
@@ -125,10 +125,10 @@ local function stackInheritanceTestsDefault()
     checks:add(stack:getAge(), 0 ,"Age set wrong on creation")
 
     for i=1, 16 do
-        stack:_tick()
+        stack:tick()
     end
 
-    checks:add(stack:getAge(), 16, "`_tick` did not change age")
+    checks:add(stack:getAge(), 16, "`tick` did not change age")
 
     stack:resetAge()
 
@@ -188,7 +188,7 @@ local function worldStackTests()
     checks:add(worldStack:getStack():getBlock():getId(), id, "getStack then getBlock doesn't work somehow")
 
     checks:add(worldStack:shouldDespawn(), false, "shouldDespawn is wrong")
-    for i=1, 11 do worldStack:_tick() end
+    for i=1, 11 do worldStack:tick() end
     checks:add(worldStack:shouldDespawn(), true, "shouldDespawn is wrong")
 
     return checks
@@ -229,10 +229,10 @@ local function worldStackInheritanceTests()
     checks:add(worldStack:getAge(), 0, "Age set wrong on creation")
 
     for i=1, 16 do
-        worldStack:_tick()
+        worldStack:tick()
     end
 
-    checks:add(worldStack:getAge(), 16, "`_tick` did not change age")
+    checks:add(worldStack:getAge(), 16, "`tick` did not change age")
     worldStack:resetAge()
     checks:add(worldStack:getAge(), 0, "`resetAge` didn't")
 

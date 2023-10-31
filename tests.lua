@@ -25,7 +25,7 @@ assert(worldStack:getNumber() == 0, "9")
 -- Test Block methods
 assert(worldStack:getId() == "grASS", "10")
 assert(worldStack:getAge() == 0, "11")
-for i=1, 10 do worldStack:_tick() end
+for i=1, 10 do worldStack:tick() end
 assert(worldStack:getAge() == 10, "12") --(0 + 10)
 worldStack:resetAge()
 assert(worldStack:getAge() == 0, "13") -- 0 (it was just reset)
@@ -34,7 +34,7 @@ assert(worldStack:getAge() == 0, "13") -- 0 (it was just reset)
 assert(worldStack:getNumber() == 0, "14")
 assert(worldStack2:getNumber() == 32, "15")
 
-for i=1, 10 do worldStack2:_tick() end
+for i=1, 10 do worldStack2:tick() end
 assert(worldStack:getAge() == 0, "16")
 assert(worldStack2:getAge() == 10, "17")
 

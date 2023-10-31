@@ -10,7 +10,7 @@ require("constants")
 ---@field private _id string
 ---@field private _age number
 ---@field private _setAge function
----@field private _tick function
+---@field private tick function
 ---@field private __tostring function
 Block = {}
 
@@ -54,7 +54,7 @@ Block._setAge = function(self, age) self._age = age end
 
 --- Increase `_age` by 1
 ---@param self Block
-Block._tick = function(self)
+Block.tick = function(self)
     self:_setAge(self:getAge() + 1)
 end
 
