@@ -274,6 +274,39 @@ local function inventoryTests ()
     Check:new(stack:getNumber(), 0, "pickUp didnt remove properly from stack")
     Check:new(inventory:getSelectedStack():getNumber(), 32, "pickUp didnt add properly to inventory")
 
+    local stack2 = Stack:new(block, 48)
+    inventory:pickUp(stack2)
+
+    Check:new(stack2:getNumber(), 0, "pickup didnt remoove properly from stack (2 stack dropoff case)")
+    Check:new(inventory:getSelectedStack():getNumber(), 64, "pickUp didnt add properly to inventory (2 stack dropoff case, 1st stack)")
+
+    inventory:select(2)
+
+    Check:new(inventory:getSelectedStack():getNumber(), 16, "pickup didnt add properly to inventory (2 stack dropoff case, 2nd stack)")
+
+    local block2 = Block:new("diamond")
+    local stack3 = Stack:new(block2, 48)
+    inventory:pickUp(stack3)
+    inventory:select(3)
+
+    Check:new(inventory:getSelectedStack():getNumber(), 48, "pickup didn't add properly to inventory (item 1 dropping off into and inventory with partial slots of item 2 case)")
+
+    inventory:select(4)
+    Check:new(inventory:getSelectedStack():getNumber(), 0, "a slot that should be 0 is not zero")
+
+    inventory:select(2)
+    local stack4 = Stack:new(block, 0)
+    stack4:addItem(inventory:takeItem(64))
+
+    Check:new(inventory:getSelectedStack():getNumber(), 0, "takeItem did not remove items")
+    Check:new(stack4:getNumber(), 16, "takeItem did not return the proper number")
+
+    inventory:select(1)
+    inventory:getSelectedStack():addItem(stack4:addItem(inventory:takeItem(64)))
+
+    Check:new(inventory:getSelectedStack():getNumber(), 16, "inventory removed too many items from itself or the stack returned improperly from addItem")
+    Check:new(stack4:getNumber(), 64, "inventory did not take the proper amount of items from itself")
+
     return checks
 end
 
