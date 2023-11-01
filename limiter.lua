@@ -4,10 +4,10 @@ require('constants')
 ---@class (exact) Limiter
 ---@field public add function
 ---@field private _loop function
----@field private _functions function[]
+---@field private _threads thread[]
 Limiter = {}
 
-Limiter._functions = {}
+Limiter._threads = {}
 
 --- The most important part of the whole program.
 --- All programs contain yields at "action points",
@@ -15,8 +15,8 @@ Limiter._functions = {}
 --- This goes through each stage of a world tick, and lets each
 --- program step forward "1 tick"
 ---@param self Limiter
-Limiter._loop = function(self) 
-    for _, func in pairs(self._functions) do
+Limiter._loop = function(self)
+    for _, func in pairs(self._threads) do
         coroutine.resume(func)
     end
 end
