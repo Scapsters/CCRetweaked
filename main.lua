@@ -2,7 +2,7 @@
 require('limiter')
 
 local function getIntInput()
-    io.write("How many loops?")
+    io.write("How many loops? ")
     return io.read("n")
 end
 
