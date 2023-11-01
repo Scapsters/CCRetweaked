@@ -3,28 +3,25 @@ require('constants')
 
 ---@class (exact) Limiter
 ---@field public add function
----@field private _loop function[]
----@field private _shouldContinue function
+---@field private _loop function
+---@field private _functions function[]
 Limiter = {}
 
----TODO: Have this not always return true maybe
----@return boolean
-Limiter._shouldContinue = function() return true end
+Limiter._functions = {}
 
-Limiter._loop = {
-    [1] = Limiter._shouldContinue
-}
+--- The most important part of the whole program.
+--- All programs contain yields at "action points",
+--- functions that require "real movements" such as moving forward a block.
+--- This goes through each stage of a world tick, and lets each
+--- program step forward "1 tick"
+---@param self Limiter
+Limiter._loop = function(self) 
+    for _, func in self._functions do
+        coroutine.resume(func)
+    end
+end
 
 ---@param func function
 Limiter.add = function(func)
     Limiter._loop[#Limiter._loop+1] = func
-end
-
-local function getIntInput()
-    io.write("How many loops?")
-    return io.read("n")
-end
-
-for _=1,getIntInput() do
-    Limiter._loop()
 end
