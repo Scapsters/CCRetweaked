@@ -10,7 +10,6 @@ INVENTORY_SIZE = 16
 ---@field public getSelectedStack function
 ---@field public pickUp function
 ---@field public moveItem function
----@field private _getStacks function
 ---@field private _setStack function
 ---@field private _stacks Stack[]
 ---@field private _selectedSlot integer
@@ -38,10 +37,6 @@ end
 ---@param self Inventory
 ---@return integer
 Inventory.getSelectedSlot = function(self) return self._selectedSlot end
-
----@param self Inventory
----@return Stack[]
-Inventory._getStacks = function(self) return self._stacks end
 
 --- Set the selected slot. Wraps around if you go too high
 ---@param self Inventory
