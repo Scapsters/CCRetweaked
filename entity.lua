@@ -48,6 +48,7 @@ end
 Entity.toString = function(self)
     return self:__tostring()
 end
+
 Entity.__tostring = function(self)
-    return self._inventory.toString().."\n"..self._program.toString()
+    return self._inventory:toString().."\n"..self._program:toString()
 end
