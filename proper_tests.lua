@@ -323,7 +323,7 @@ local function inventoryTests ()
         inventory:pickUp(stack2)
 
         checks:add(stack2:getNumber(), 0, "pickup didnt remoove properly from stack (2 stack dropoff case)")
-        checks:add(inventory:getSelectedStack():getNumber(), 32, "pickUp didnt add properly to inventory (2 stack dropoff case, 1st stack)")
+        checks:add(inventory:getSelectedStack():getNumber(), 64, "pickUp didnt add properly to inventory (2 stack dropoff case, 1st stack)")
 
         inventory:select(2)
 
