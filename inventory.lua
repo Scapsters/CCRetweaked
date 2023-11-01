@@ -27,7 +27,10 @@ Inventory.new = function(self)
         _stacks = stacks,
         _selectedSlot = 1
     }
-    setmetatable(inventory, {__index = self}) -- the object looks to Inventory
+    setmetatable(inventory, {
+        __index = self,
+        __tostring = self.__tostring
+    }) -- the object looks to Inventory
     return inventory
 end
 
@@ -49,7 +52,7 @@ Inventory.select = function(self, slot) self._selectedSlot = (slot - 1) % INVENT
 --- Get the stack at the selected slot 
 ---@param self Inventory
 ---@return Stack
-Inventory.getSelectedStack = function(self) return self:_getStacks()[self:getSelectedSlot()] end
+Inventory.getSelectedStack = function(self) return self._stacks[self:getSelectedSlot()] end
 
 ---@param self Inventory
 ---@param slot integer
@@ -57,6 +60,7 @@ Inventory.getSelectedStack = function(self) return self:_getStacks()[self:getSel
 Inventory._setStack = function(self, slot, stack) self._stacks[slot] = stack end
 
 --- Attempts to put a stack into an inventory
+--- Side effects include affecting the number in stack, the stacks in Inventory
 ---@param self Inventory
 ---@param stack any
 ---@return integer overfill How many items were not returned
@@ -64,7 +68,7 @@ Inventory.pickUp = function(self, stack)
     local targetID = stack:getId()
     local number = stack:getNumber()
 
-    local stacks = self:_getStacks()
+    local stacks = self._stacks
     for index, slot in pairs(stacks) do
         if slot:getNumber() == 0 then
             self:_setStack(index, Stack:new(nil, nil, stack)) -- Dereference stack
@@ -94,3 +98,31 @@ Inventory.moveItem = function(self, toStack, amount)
     fromStack:addItem(leftoverItems)
     return itemsTaken - leftoverItems
 end
+
+---@param self Inventory
+---@return string
+Inventory.toString = function(self)
+    return self:__tostring()
+end
+
+---@param self Inventory
+---@return string
+Inventory.__tostring = function(self)
+    local result = ""
+    for i, stack in pairs(self._stacks) do
+        result = result..stack:toString()
+        if i % 4 == 0 then result = result.."\n" end -- Skip a line every 4 items
+    end
+    return result
+end
+
+local inventory = Inventory:new()
+
+local stack = Stack:new(Block:new("wumpus"), 48)
+local stack2 = Stack:new(Block:new("wumpus"), 48)
+
+inventory:pickUp(stack, 64)
+inventory:pickUp(stack, 64)
+inventory:pickUp(stack, 64)
+
+print(inventory)
