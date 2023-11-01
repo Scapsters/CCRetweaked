@@ -16,7 +16,7 @@ Limiter._functions = {}
 --- program step forward "1 tick"
 ---@param self Limiter
 Limiter._loop = function(self) 
-    for _, func in self._functions do
+    for _, func in pairs(self._functions) do
         coroutine.resume(func)
     end
 end
