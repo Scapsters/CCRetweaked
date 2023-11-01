@@ -32,7 +32,7 @@ Clock.cycle = function(self)
     local cycle = math.floor(timeElapsed / self._period) + 1
     -- Check if we've fallen behind
     if cycle - self._lastCycle > 1 then
-        io.write("A cycle was skipped! "..cycle.." <- "..self._lastCycle)
+        io.write("A cycle was skipped! "..self._lastCycle.." -> "..cycle)
     end
 
     self._lastCycle = cycle
