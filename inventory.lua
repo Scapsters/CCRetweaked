@@ -58,17 +58,16 @@ Inventory._setStack = function(self, slot, stack) self._stacks[slot] = stack end
 --- Side effects include affecting the number in stack, the stacks in Inventory
 ---@param self Inventory
 ---@param stack any
----@return integer overfill How many items were not returned
 Inventory.pickUp = function(self, stack)
     local targetID = stack:getId()
     local number = stack:getNumber()
 
-    local stacks = self._stacks
-    for index, slot in pairs(stacks) do
+    -- Go through each slot once, looking for empty or same-type stacks
+    for index, slot in pairs(self._stacks) do
         if slot:getNumber() == 0 then
             self:_setStack(index, Stack:new(nil, nil, stack)) -- Dereference stack
-            stack:takeItem(number) -- Empty the stack
-            return number
+            stack:takeItem(number) -- Empty the stack and return early
+            return
         end
         -- If the slot is of the same type, add as many as you can, continue
         local id = slot:getId()
@@ -76,8 +75,6 @@ Inventory.pickUp = function(self, stack)
             number = stack:takeItem(slot:addItem(number)) -- remove as many items as possible, update number
         end
     end
-
-    return number
 end
 
 --- Attempts to take items from the selected stack and put them into the provided stack
@@ -85,13 +82,11 @@ end
 ---@param self Inventory
 ---@param toStack Stack
 ---@param amount integer
----@return integer amount How many items were taken
 Inventory.moveItem = function(self, toStack, amount)
     local fromStack = self:getSelectedStack()
     local itemsTaken = fromStack:takeItem(amount)
     local leftoverItems = toStack:addItem(itemsTaken)
     fromStack:addItem(leftoverItems)
-    return itemsTaken - leftoverItems
 end
 
 ---@param self Inventory
