@@ -57,22 +57,24 @@ Inventory._setStack = function(self, slot, stack) self._stacks[slot] = stack end
 --- Attempts to put a stack into an inventory
 --- Side effects include affecting the number in stack, the stacks in Inventory
 ---@param self Inventory
----@param stack any
+---@param stack Stack
 Inventory.pickUp = function(self, stack)
     local targetID = stack:getId()
-    local number = stack:getNumber()
+    local number = stack:getNumber() -- The size of the pool of items we want to get rid of
 
     -- Go through each slot once, looking for empty or same-type stacks
     for index, slot in pairs(self._stacks) do
         if slot:getNumber() == 0 then
-            self:_setStack(index, Stack:new(nil, nil, stack)) -- Dereference stack
-            stack:takeItem(number) -- Empty the stack and return early
+            self:_setStack(index, Stack:new(nil, nil, stack)) -- Copy the given stack into the slot
+            stack:takeItem(number) -- Empty the original stack and return early
             return
         end
         -- If the slot is of the same type, add as many as you can, continue
-        local id = slot:getId()
-        if id == targetID then
-            number = stack:takeItem(slot:addItem(number)) -- remove as many items as possible, update number
+        if slot:getId() == targetID then
+            local leftovers = slot:addItem(number)  -- remove as many items as possible, then update things
+            local amountTaken = number - leftovers
+            stack:takeItem(amountTaken)
+            number = leftovers
         end
     end
 end
@@ -113,6 +115,8 @@ local stack2 = Stack:new(Block:new("wumpus"), 48)
 
 inventory:pickUp(stack, 64)
 inventory:pickUp(stack, 64)
+inventory:pickUp(stack2, 64)
 inventory:pickUp(stack, 64)
+inventory:pickUp(stack2, 64)
 
 print(inventory)
