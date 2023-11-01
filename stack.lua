@@ -81,7 +81,7 @@ end
 --- Take items from a stack
 ---@param self Stack
 ---@param amount number How many to attempt to remove
----@return integer leftover How many items are removed from the stack
+---@return integer amountTaken How many items are removed from the stack
 Stack.takeItem = function(self, amount)
     -- returns how many items leave the stack
     local number = self:getNumber()
