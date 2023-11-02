@@ -52,7 +52,7 @@ end
 
 ---@param self Stack
 ---@return number
-Stack.getNumber = function(self) return self._number end
+Stack.getNumber = function(self) return self._number or 0 end
 
 --- Creates a new block from the information within `self`
 ---@param self Stack
