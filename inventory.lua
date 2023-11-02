@@ -102,7 +102,7 @@ end
 Inventory.__tostring = function(self)
     local result = ""
     for i, stack in pairs(self._stacks) do
-        result = result..stack:toString()
+        result = result..stack:toString().."  "
         if i % 4 == 0 then result = result.."\n" end -- Skip a line every 4 items
     end
     return result
