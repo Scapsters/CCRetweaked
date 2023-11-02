@@ -3,6 +3,11 @@ require("world_stack")
 ---@module 'inventory'
 require("inventory")
 
+debug.setmetatable(nil, {
+    __tostring = function() return "nil" end,
+    __concat = function() return "nil" end
+})
+
 ---@class Checker
 ---@field addCheckBundle function
 ---@field runChecks function
@@ -138,7 +143,7 @@ local function stackInheritanceTestsDefault()
 
     local stack = Stack:new()
 
-    checks:add(stack:getId(), nil, "Id set wrong on creation")
+    checks:add(stack:getId(), '', "Id set wrong on creation")
     checks:add(stack:getAge(), 0 ,"Age set wrong on creation")
 
     for i=1, 16 do
@@ -358,10 +363,24 @@ local function inventoryTests ()
         checks:add(inventory:getSelectedStack():getNumber(), 0, "a slot that should be 0 is not zero")
     end
 
+    local function assignEmptySlotIdTest()
+        -- Trying to pick up an empty stack can result in a slot in the inventory
+        -- having the id of that empty stack, while being empty.
+        local inventory = Inventory:new()
+        local stack = Stack:new(Block:new("wingus"), 48)
+
+        inventory:pickUp(stack)
+        inventory:pickUp(stack)
+        inventory:select(2)
+
+        checks:add(inventory:getSelectedStack():getId(), '', "empty slot was assigned an id")
+    end
+
     getSelectedSlotTests()
     pickUpTests()
     moveItemTests()
     sideEffectTests()
+    assignEmptySlotIdTest()
 
     return checks
 end

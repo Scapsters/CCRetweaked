@@ -62,6 +62,8 @@ Inventory.pickUp = function(self, stack)
     local targetID = stack:getId()
     local number = stack:getNumber() -- The size of the pool of items we want to get rid of
 
+    if number == 0 then return end
+
     -- Go through each slot once, looking for empty or same-type stacks
     for index, slot in pairs(self._stacks) do
         if slot:getNumber() == 0 then
@@ -114,9 +116,7 @@ local stack = Stack:new(Block:new("wumpus"), 48)
 local stack2 = Stack:new(Block:new("wumpus"), 48)
 
 inventory:pickUp(stack, 64)
-inventory:pickUp(stack, 64)
 inventory:pickUp(stack2, 64)
-inventory:pickUp(stack, 64)
 inventory:pickUp(stack2, 64)
 
 print(inventory)
