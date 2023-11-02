@@ -50,5 +50,8 @@ Entity.toString = function(self)
 end
 
 Entity.__tostring = function(self)
-    return self._inventory:toString().."\n"..self._program:toString()
+    local program = ""
+    if self._program then program = "Has a program" end
+
+    return self._inventory:toString().."\n"..program
 end
