@@ -38,11 +38,11 @@ end
 
 ---@param self Block
 ---@return string
-Block.getId = function(self) return self._id end
+Block.getId = function(self) return self._id or "" end
 
 ---@param self Block
 ---@return number
-Block.getAge = function(self) return self._age end
+Block.getAge = function(self) return self._age or 0 end
 
 --- Set `_age` to 0
 ---@param self Block

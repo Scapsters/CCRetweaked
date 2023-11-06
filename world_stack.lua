@@ -51,7 +51,7 @@ end
 
 ---@param self WorldStack
 ---@return number
-WorldStack.getMaxAge = function(self) return self._maxAge end
+WorldStack.getMaxAge = function(self) return self._maxAge or 0 end
 
 ---@param self WorldStack
 ---@return boolean

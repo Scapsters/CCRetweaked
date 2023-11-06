@@ -3,6 +3,11 @@ require("world_stack")
 ---@module 'inventory'
 require("inventory")
 
+debug.setmetatable(nil, {
+    __tostring = function() return "nil" end,
+    __concat = function() return "nil" end
+})
+
 ---@class Checker
 ---@field addCheckBundle function
 ---@field runChecks function
@@ -138,7 +143,7 @@ local function stackInheritanceTestsDefault()
 
     local stack = Stack:new()
 
-    checks:add(stack:getId(), nil, "Id set wrong on creation")
+    checks:add(stack:getId(), '', "Id set wrong on creation")
     checks:add(stack:getAge(), 0 ,"Age set wrong on creation")
 
     for i=1, 16 do
@@ -316,25 +321,25 @@ local function inventoryTests ()
         local stack = Stack:new(block, 32)
         inventory:pickUp(stack)
 
-        Check:new(stack:getNumber(), 0, "pickUp didnt remove properly from stack")
-        Check:new(inventory:getSelectedStack():getNumber(), 32, "pickUp didnt add properly to inventory")
+        checks:add(stack:getNumber(), 0, "pickUp didnt remove properly from stack")
+        checks:add(inventory:getSelectedStack():getNumber(), 32, "pickUp didnt add properly to inventory")
 
         local stack2 = Stack:new(block, 48)
         inventory:pickUp(stack2)
 
-        Check:new(stack2:getNumber(), 0, "pickup didnt remoove properly from stack (2 stack dropoff case)")
-        Check:new(inventory:getSelectedStack():getNumber(), 64, "pickUp didnt add properly to inventory (2 stack dropoff case, 1st stack)")
+        checks:add(stack2:getNumber(), 0, "pickup didnt remoove properly from stack (2 stack dropoff case)")
+        checks:add(inventory:getSelectedStack():getNumber(), 64, "pickUp didnt add properly to inventory (2 stack dropoff case, 1st stack)")
 
         inventory:select(2)
 
-        Check:new(inventory:getSelectedStack():getNumber(), 16, "pickup didnt add properly to inventory (2 stack dropoff case, 2nd stack)")
+        checks:add(inventory:getSelectedStack():getNumber(), 16, "pickup didnt add properly to inventory (2 stack dropoff case, 2nd stack)")
 
         local block2 = Block:new("diamond")
         local stack3 = Stack:new(block2, 48)
         inventory:pickUp(stack3)
         inventory:select(3)
 
-        Check:new(inventory:getSelectedStack():getNumber(), 48, "pickup didn't add properly to inventory (item 1 dropping off into and inventory with partial slots of item 2 case)")
+        checks:add(inventory:getSelectedStack():getNumber(), 48, "pickup didn't add properly to inventory (item 1 dropping off into and inventory with partial slots of item 2 case)")
     end
 
     local function moveItemTests()
@@ -343,25 +348,39 @@ local function inventoryTests ()
         local stack = Stack:new(block, 0)
         inventory:moveItem(stack, 64)
 
-        Check:new(inventory:getSelectedStack():getNumber(), 0, "takeItem did not remove items")
-        Check:new(stack:getNumber(), 16, "takeItem did not return the proper number")
+        checks:add(inventory:getSelectedStack():getNumber(), 0, "takeItem did not remove items")
+        checks:add(stack:getNumber(), 16, "takeItem did not return the proper number")
 
         inventory:select(1)
         inventory:moveItem(stack, 64)
 
-        Check:new(inventory:getSelectedStack():getNumber(), 16, "inventory removed too many items from itself or the stack returned improperly from addItem")
-        Check:new(stack:getNumber(), 64, "inventory did not take the proper amount of items from itself")
+        checks:add(inventory:getSelectedStack():getNumber(), 16, "inventory removed too many items from itself or the stack returned improperly from addItem")
+        checks:add(stack:getNumber(), 64, "inventory did not take the proper amount of items from itself")
     end
 
     local function sideEffectTests()
         inventory:select(4)
-        Check:new(inventory:getSelectedStack():getNumber(), 0, "a slot that should be 0 is not zero")
+        checks:add(inventory:getSelectedStack():getNumber(), 0, "a slot that should be 0 is not zero")
+    end
+
+    local function assignEmptySlotIdTest()
+        -- Trying to pick up an empty stack can result in a slot in the inventory
+        -- having the id of that empty stack, while being empty.
+        local inventory = Inventory:new()
+        local stack = Stack:new(Block:new("wingus"), 48)
+
+        inventory:pickUp(stack)
+        inventory:pickUp(stack)
+        inventory:select(2)
+
+        checks:add(inventory:getSelectedStack():getId(), '', "empty slot was assigned an id")
     end
 
     getSelectedSlotTests()
     pickUpTests()
     moveItemTests()
     sideEffectTests()
+    assignEmptySlotIdTest()
 
     return checks
 end
