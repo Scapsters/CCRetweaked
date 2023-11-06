@@ -139,7 +139,7 @@ function HandleFuel()
   local prev = turtle.getSelectedSlot()
 
   if turtle.getFuelLevel() < FUEL_THRESHOLD then
-    turtle.select(FindItem(NAME_FUELS, "ordered"))
+    turtle.select(FindItem(NAME_FUELS))
     turtle.refuel()
   end
 
