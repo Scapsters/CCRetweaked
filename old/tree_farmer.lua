@@ -17,7 +17,7 @@
 
 NUMBER_ROWS = 4 -- Number of Rows
 ROW_LENGTH = 7 -- Row Length
-CHESTS_HEIGHT = 3 -- Chest Height
+CHESTS_HEIGHT = 3 -- Chest Height (1 is sitting on the ground)
 RELATIVE_DIRECTION = 1 -- Relative Direction
 FUEL_THRESHOLD = 1000 -- Fuel Threshold
 NAME_LOGS = {
@@ -42,6 +42,8 @@ function Main()
   end
 end
 
+-- Only empty inventory if
+-- Every slot is non-empty
 function HandleStorage()
   local inventory = GetInventory()
   for i= 1, 16 do
@@ -52,6 +54,8 @@ function HandleStorage()
   EmptyStorage()
 end
 
+-- Will empty storage, saving
+-- 1 stack of saplings
 function EmptyStorage()
   turtle.turnLeft()
   turtle.turnLeft()
@@ -179,12 +183,15 @@ function CheckForTree()
   end
 end
 
+-- Won't break leaves
+-- Can only chop normal trees
 function ChopTree()
   MoveForward()
 
   local height = 0
 
-  while turtle.detectUp() do
+  local blockNameAbove = turtle.inspectUp().data.name
+  while IsIn(blockNameAbove, NAME_LOGS) do
     MoveUp()
     height = height + 1
   end
@@ -233,58 +240,18 @@ function ResetRow()
   RELATIVE_DIRECTION = 1 --Reset
 end
 
-function FindItem(names, select)
+-- Find the first occurance
+-- of an item(s) in inventory
+-- and return the first index
+function FindItem(names)
   local inventory = GetInventory()
-  print(inventory[1])
-  print(inventory[2])
-  local matches = GetMatches(names, inventory)
 
-  -- Make sure its not empty
-  if matches[1] == nil then
-    print("W: nothing found")
-    return turtle.getSelectedSlot()
-  end
-
-  -- Different ways to return
-
-  -- Return the first one in the list
-  -- Basically, priority is considered
-  if select == "ordered" then
-    local first = GetFirst(names, matches)
-    return matches[first].location
-  -- Random
-  elseif select == "random" then
-    local randIndex = math.random(1, index)
-    return matches[randIndex].location
-  -- Unknown, return first match
-  else
-    return matches[1].location
-  end
-end
-
-function GetMatches(targets, pool)
-  local matches = {}
-  local count = 1
-
-  -- For item in target, and for item in pool
-  -- If a match is found, store data about
-  -- the location of match in pool
-  for i= 1, GetLength(targets) do
-    for j= 1, 16 do
-
-      if targets[i] == pool[j] then
-        print("match found")
-        matches[count] = {
-          location = j,
-          name = pool[j]
-        }
-        count = count + 1
-      end
-
+  for i= 1, 16 do
+    if isIn(names, inventory[j]) then
+      print("match found")
+      return j
     end
   end
-
-  return matches
 end
 
 function GetInventory()
@@ -298,28 +265,9 @@ function GetInventory()
   return inventory
 end
 
-function GetFirst(names, matches)
-  -- For each name in the list
-  local i = 1
-  while names[i] ~= nil do
-    local target = names[i]
-    -- For each match
-    local j = 1
-    while matches[j] ~= nil do
-      local currentName = matches[j].name
-      -- See if its the target
-      if currentName == target then
-        return matches[j].location
-      end
-      j = j + 1
-    end
-    i = i + 1
-  end
-  -- This code should only be called if IsIn was true
-  error("Something went very wrong...")
-end
-
 function IsIn(target, list)
+  if list == nil then return false end
+
   for i= 1, GetLength(list) do
     if target == list[i] then
       return i
@@ -330,27 +278,11 @@ end
 
 function GetLength(list)
   if list == nil then return 0 end
+  if type(list) ~= "table" then return 1 end
+
   local index = 0
   repeat
     index = index + 1
   until not list[index]
   return index - 1
 end
-
-print(GetFirst(
-  NAME_LOGS,
-  {
-    [1] = {
-      name = "minecraft:birch_log",
-      location = 10
-    },
-    [2] = {
-      name = "minecraft:oak_log",
-      location = 13
-    },
-    [3] = {
-      name = "minecraft:birch_log",
-      location = 15
-    }
-  }
-))
